@@ -195,8 +195,8 @@ export default {
             let tempData = {};
             switch (item.Resource){
               case 'processor':tempData={Resource:'处理器',FlatUtil:item.Utilization,Maximum:item.Maximum+'核心'}; break;
-              case 'ram':tempData={Resource:'RAM',FlatUtil:item.Utilization+`(${item.FlatUtil}GB)`,Maximum:item.Maximum+'GB'}; break;
-              case 'hdd':tempData={Resource:'硬盘',FlatUtil:item.Utilization+`(${item.FlatUtil}GB)`,Maximum:item.Maximum+'GB'}; break;
+              case 'ram':tempData={Resource:'RAM',FlatUtil:item.Utilization+`%(${item.FlatUtil}GB)`,Maximum:item.Maximum+'GB'}; break;
+              case 'hdd':tempData={Resource:'硬盘',FlatUtil:item.Utilization+`%(${item.FlatUtil}GB)`,Maximum:item.Maximum+'GB'}; break;
             }
             array.push(tempData);
           }
