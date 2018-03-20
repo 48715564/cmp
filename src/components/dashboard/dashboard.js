@@ -50,7 +50,7 @@ export default {
       return {xData: dateArray, title: title};
     },
     //获得cpu信息
-    getCpuChartYLineData(data) {
+    getCpuChartData(data) {
       return [{
         name: '可用cpu总数',
         value: data.virtualCpu - data.virtualUsedCpu,
@@ -61,7 +61,7 @@ export default {
       ]
     },
     //获得内存信息
-    getMemoryChartYLineData(data) {
+    getMemoryChartData(data) {
       return [{
         name: '可用内存大小',
         value: data.memory - data.memoryUsed,
@@ -72,7 +72,7 @@ export default {
       ]
     },
     //获得存储信息
-    getStoreChartYLineData(data) {
+    getStoreChartData(data) {
       return [{
         name: '空闲磁盘大小',
         value: data.freeDisk,
@@ -80,6 +80,45 @@ export default {
         name: '已用磁盘大小',
         value: data.localUsed,
       }]
+    },
+    //获得cpu信息
+    getCpuChartYLineData(data){
+      let cpuCountArray = [];
+      let cpuUseCountArray = [];
+      for(let i = 0 ; i< data.length; i++){
+        cpuCountArray.push(data[i].virtualCpu);
+        cpuUseCountArray.push(data[i].virtualUsedCpu);
+      }
+      return {
+        cpuCountData:cpuCountArray,
+        cpuUseCountData:cpuUseCountArray,
+      }
+    },
+    //获得内存信息
+    getMemoryChartYLineData(data){
+      let memoryCountArray = [];
+      let memoryUseCountArray = [];
+      for(let i = 0 ; i< data.length; i++){
+        memoryCountArray.push(data[i].memory);
+        memoryUseCountArray.push(data[i].memoryUsed);
+      }
+      return {
+        memoryCountData:memoryCountArray,
+        memoryUseCountData:memoryUseCountArray,
+      }
+    },
+    //获得存储信息
+    getStoreChartYLineData(data){
+      let localArray = [];
+      let localUseArray = [];
+      for(let i = 0 ; i< data.length; i++){
+        localArray.push(data[i].local);
+        localUseArray.push(data[i].localUsed);
+      }
+      return {
+        localArray,
+        localUseArray
+      }
     },
     //获得网络信息
     getNetChartYLineData(data) {
@@ -98,9 +137,9 @@ export default {
     OpenStackService.openStackInfo().then((res) => {
       if (res.data.success) {
         this.data = res.data.result;
-        CanvasService.drawCPUDepletionGraph(this.$refs.cpu, this.getCpuChartYLineData(this.data));
-        CanvasService.drawMemoryDepletionGraph(this.$refs.ram, this.getMemoryChartYLineData(this.data));
-        CanvasService.drawStoreDepletionGraph(this.$refs.store, this.getStoreChartYLineData(this.data));
+        CanvasService.drawCPUDepletionGraphBar(this.$refs.cpu, this.getCpuChartData(this.data));
+        CanvasService.drawMemoryDepletionGraphBar(this.$refs.ram, this.getMemoryChartData(this.data));
+        CanvasService.drawStoreDepletionGraphBar(this.$refs.store, this.getStoreChartData(this.data));
       } else {
         this.dataStatus = false;
         this.data = {
@@ -117,10 +156,18 @@ export default {
       if (res.data.success) {
         const tmpData = res.data.result.list;
         const xLineData = this.getChartXLineData(tmpData);
-
+        const yLineData = this.getCpuChartYLineData(tmpData);
+        const cpuData = {...xLineData,yData:yLineData};
+        CanvasService.drawCPUDepletionGraph(this.$refs.cpuLine,cpuData);
+        const yMemoryData = this.getMemoryChartYLineData(tmpData);
+        const memoryData = {...xLineData,yData:yMemoryData};
+        CanvasService.drawMemoryDepletionGraph(this.$refs.ramLine,memoryData);
         const yNetWorkData = this.getNetChartYLineData(tmpData);
-        const netData = {...xLineData, yData: yNetWorkData};
-        CanvasService.drawNetWorkDepletionGraph(this.$refs.network, netData);
+        const netData = {...xLineData,yData:yNetWorkData};
+        CanvasService.drawNetWorkDepletionGraph(this.$refs.network,netData);
+        const yStoreData = this.getStoreChartYLineData(tmpData);
+        const storeData = {...xLineData,yData:yStoreData};
+        CanvasService.drawStoreDepletionGraph(this.$refs.storeLine,storeData);
       } else {
         this.historyData = false;
       }

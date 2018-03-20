@@ -27,7 +27,7 @@ const middle = 'middle';
 const defaultXData = ['', '', '', '', '', '', '', '', '', ''];
 /* eslint-enable */
 
-const drawCPUDepletionGraph = (el, data) => {
+const drawCPUDepletionGraphBar = (el, data) => {
   const Chart = Echarts.init(el);
   Chart.setOption({
     tooltip: {
@@ -39,6 +39,7 @@ const drawCPUDepletionGraph = (el, data) => {
         name: 'cpu使用情况',
         type: 'pie',
         data: data,
+        radius : '55%',
         itemStyle: {
           emphasis: {
             shadowBlur: 10,
@@ -52,7 +53,7 @@ const drawCPUDepletionGraph = (el, data) => {
   return Chart;
 };
 
-const drawMemoryDepletionGraph = (el, data) => {
+const drawMemoryDepletionGraphBar = (el, data) => {
   const Chart = Echarts.init(el);
   Chart.setOption({
     tooltip: {
@@ -63,6 +64,7 @@ const drawMemoryDepletionGraph = (el, data) => {
       {
         name: '内存使用情况',
         type: 'pie',
+        radius : '55%',
         data: data,
         itemStyle: {
           emphasis: {
@@ -133,7 +135,7 @@ const drawNetWorkDepletionGraph = (el, data) => {
   return Chart;
 };
 
-const drawStoreDepletionGraph = (el, data) => {
+const drawStoreDepletionGraphBar = (el, data) => {
   const Chart = Echarts.init(el);
   Chart.setOption({
     tooltip : {
@@ -145,6 +147,7 @@ const drawStoreDepletionGraph = (el, data) => {
         name: '磁盘使用情况',
         type: 'pie',
         data: data,
+        radius : '55%',
         itemStyle: {
           emphasis: {
             shadowBlur: 10,
@@ -158,9 +161,236 @@ const drawStoreDepletionGraph = (el, data) => {
   return Chart;
 };
 
+
+
+
+const drawCPUDepletionGraph = (el,data) => {
+  const Chart = Echarts.init(el);
+  if(!data){
+    data = {
+      title:'',
+      xData:null,
+      yData:{
+        cpuCountData:null,
+        cpuUseCountData:null,
+      }
+    };
+  }
+  Chart.setOption({
+    title:{
+      text: data.title,
+      x: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        label: {
+          backgroundColor: $greyDark,
+        },
+      },
+    },
+    grid: {
+      top: '30px',
+      left: '0',
+      right: '18px',
+      bottom: '10px',
+      containLabel: true,
+    },
+    xAxis : [
+      {
+        type : 'category',
+        data: data.xData,
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        // max: '100',
+        min: '0',
+        minInterval: '1',
+        axisLine: {
+          onZero: false,
+          lineStyle: {
+            color: $greyDark,
+          },
+        },
+      },
+    ],
+    series: [
+      {
+        name: 'CPU总数',
+        type: 'line',
+        stack: 'cpu',
+        data: data.yData.cpuCountData,
+      },
+      {
+        name: '已使用CPU数量',
+        type: 'line',
+        stack: 'cpu',
+        data: data.yData.cpuUseCountData,
+      },
+    ],
+  });
+  return Chart;
+};
+
+const drawMemoryDepletionGraph = (el,data) => {
+  const Chart = Echarts.init(el);
+  if(!data){
+    data = {
+      title:'',
+      xData:null,
+      yData:{
+        memoryCountData:null,
+        memoryUseCountData:null,
+      }
+    };
+  }
+  Chart.setOption({
+    title:{
+      text: data.title,
+      x: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        label: {
+          backgroundColor: $greyDark,
+        },
+      },
+    },
+    grid: {
+      top: '30px',
+      left: '0',
+      right: '18px',
+      bottom: '10px',
+      containLabel: true,
+    },
+    xAxis : [
+      {
+        type : 'category',
+        data: data.xData,
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        // max: '100',
+        min: '0',
+        minInterval: '1',
+        axisLine: {
+          onZero: false,
+          lineStyle: {
+            color: $greyDark,
+          },
+        },
+      },
+    ],
+    series: [
+      {
+        name: '内存总数',
+        type: 'line',
+        stack: 'memory',
+        data: data.yData.memoryCountData,
+      },
+      {
+        name: '已使用内存数量',
+        type: 'line',
+        stack: 'memory',
+        data: data.yData.memoryUseCountData,
+      },
+    ],
+  });
+  return Chart;
+};
+
+
+const drawStoreDepletionGraph = (el,data) => {
+  const Chart = Echarts.init(el);
+  if(!data){
+    data = {
+      title:'',
+      xData:null,
+      yData:{
+        localArray:null,
+        localUseArray:null
+      }
+    };
+  }
+  Chart.setOption({
+    title:{
+      text: data.title,
+      x: 'center'
+    },
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'cross',
+        label: {
+          backgroundColor: $greyDark,
+        },
+      },
+    },
+    grid: {
+      top: '30px',
+      left: '0',
+      right: '18px',
+      bottom: '10px',
+      containLabel: true,
+    },
+    xAxis : [
+      {
+        type : 'category',
+        data: data.xData,
+        axisTick: {
+          alignWithLabel: true
+        }
+      }
+    ],
+    yAxis: [
+      {
+        type: 'value',
+        // max: '100',
+        min: '0',
+        minInterval: '1',
+        axisLine: {
+          onZero: false,
+          lineStyle: {
+            color: $greyDark,
+          },
+        },
+      },
+    ],
+    series: [
+      {
+        name: '本地储存',
+        type: 'line',
+        stack: 'store',
+        data: data.yData.localArray,
+      },{
+        name: '已使用本地存储',
+        type: 'line',
+        stack: 'store',
+        data: data.yData.localUseArray,
+      },
+    ],
+  });
+  return Chart;
+};
 export default {
+  drawCPUDepletionGraphBar,
+  drawMemoryDepletionGraphBar,
+  drawNetWorkDepletionGraph,
+  drawStoreDepletionGraphBar,
   drawCPUDepletionGraph,
   drawMemoryDepletionGraph,
-  drawNetWorkDepletionGraph,
   drawStoreDepletionGraph,
 };
