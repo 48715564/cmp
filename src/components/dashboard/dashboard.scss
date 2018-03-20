@@ -1,0 +1,416 @@
+.main {
+  background-color: #F5F6FA;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+.clearfix {
+  zoom: 1;
+  &:before {
+    content: '';
+    height: 0;
+    visibility: hidden;
+    display: block;
+    clear: both;
+  }
+}
+.logo, .hd-user-info, .hd-status-alarm {
+  height: 100%;
+}
+
+.header .nav-container, .container {
+  margin: 0 auto;
+  padding: 0 20px;
+  width: 85%;
+  min-width: 1240px;
+}
+.header {
+  height: 60px;
+  background-color: #fff;
+  box-shadow: 0 10px 60px 0 rgba(29,29,31,0.07);
+  .nav-container {
+    height: 100%;
+    color: #1D1D1F;
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    &>img {
+      width: 210px;
+    }
+  }
+  .hd-user-info, .hd-status-alarm {
+    border-right: 1px solid #eee;
+    display: flex;
+    align-items: center;
+  }
+  .nav-left, .nav-right {
+    display: flex;
+  }
+  .hd-user-info {
+    padding-right: 20px;
+    .hd-user-role, .hd-user-pic {
+      margin: 0 8px;
+    }
+    .hd-user-pic {
+      width: 45px;
+      height: 45px;
+      border-radius: 100%;
+      border: 1px solid #ddd;
+      background-color: #fff;
+    }
+  }
+  .hd-status-alarm {
+    padding: 0 25px;
+    cursor: pointer;
+    &:hover {
+      background-color: #eee;
+      transition: all .3s;
+    }
+  }
+}
+.small-text{
+  font-size: 12px;
+  color: #aaaaaa;
+}
+.container {
+  padding: 0;
+  padding-top: 20px;
+  .top-card {
+    padding: 20px;
+    height: 150px;
+    overflow: visible;
+    .item {
+      padding: 15px 20px;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      background-color: #fff;
+      overflow: visible;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      .item-right{
+        margin-left: 7px;
+      }
+      .item-title {
+        user-select: none;
+        font-weight: bold;
+        font-size: 12px;
+      }
+    }
+  }
+  .card {
+    padding: 20px;
+    height: 300px;
+    overflow: visible;
+    .item {
+      padding: 15px 20px;
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+      background-color: #fff;
+      overflow: visible;
+      box-sizing: border-box;
+      .item-title {
+        user-select: none;
+        font-weight: bold;
+        font-size: 12px;
+      }
+    }
+    .item-empty {
+      width: 100%;
+      height: 100%;
+      line-height: 100%;
+      font-size: 24px;
+      border-radius: 8px;
+      background-color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      p{
+        font-size: inherit;
+      }
+    }
+    .warn {
+      padding: 15px 5px;
+      .item-title {
+        padding-left: 15px;
+      }
+      .item-info {
+        margin-top: 20px;
+      }
+      .item-info-icon {
+        margin-left: -5px;
+      }
+      .openstack-warn, .kubernetes-warn {
+        width: 49.99999%;
+        float: left;
+        .item-info-icon {
+          width: 100% !important;
+        }
+        .warning {
+          text-align: center;
+          font: 22px bolder;
+          height: 3em;
+          line-height: 3em;
+          color: #db0404;
+        }
+        .warn-message {
+          padding: 0 10px;
+          &>p {
+            margin: 7px 0;
+            font-size: 12px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+      .openstack-warn {
+        border-right: 1px solid #ccc;
+      }
+    }
+  }
+  .card.col-md-12 {
+    min-width: 530px;
+  }
+  .card.col-md-6 {
+    min-width: 265px;
+  }
+}
+.mt {
+  min-width: 168px;
+  &>div{
+    margin: 5px 0;
+  }
+}
+.item-content {
+  width: 100%;
+  height: calc(100% - 1.5em);
+  .item-info {
+    .item-info-title {
+      &>span {
+        font-size: 12px;
+        color: #8d94a8;
+      }
+    }
+    .item-info-k, .item-info-o {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+    .item-info-icon {
+      width: 80px;
+      height: 32px;
+      background-size: auto 32px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .item-info-k-icon {
+      background-image: url('../../assets/images/kubernetes.png');
+    }
+    .item-info-o-icon {
+      background-image: url('../../assets/images/openstack.png');
+    }
+    .item-info-text {
+      display: flex;
+      align-items: center;
+      padding-right: 10px;
+      font-weight: bold;
+      span {
+        font-size: 16px;
+        height: 32px;
+        line-height: 32px;
+        display: block;
+      }
+      .item-info-text-tag {
+        width: 0;
+        height: 32px;
+      }
+      .rect-blue-1, .rect-blue-2, .rect-red-1, .rect-red-2 {
+        margin-top: -0.1em;
+        margin-right: 7px;
+        height: 24px;
+        width: 3px;
+        display: block;
+      }
+      .item-info-text-tag.rect-red-1 {
+        background-color: #e84747;
+      }
+      .item-info-text-tag.rect-red-2 {
+        background: linear-gradient(to bottom, #e84747 0, #e84747 50%, #fb8d8d 50%, #fb8d8d 100%);
+      }
+      .item-info-text-tag.rect-blue-1 {
+        background-color: #3b85da;
+      }
+      .item-info-text-tag.rect-blue-2 {
+        background: linear-gradient(to bottom, #3b85da 0, #3b85da 50%, #a1c2e8 50%, #a1c2e8 100%);
+      }
+      .line-2 {
+        &>span {
+          height: 16px;
+          line-height: 16px;
+          font-size: 12px;
+          color: #8d94a8;
+        }
+        strong {
+          margin-left: 5px;
+          font-size: 14px;
+          color: #3F536E;
+          float: right;
+        }
+      }
+    }
+  }
+}
+
+.wd-full {
+  width: 100%;
+}
+.wd-no-full {
+  width: 50%;
+}
+.slider-nav-left, .slider-nav-right, .slider-nav-bottom {
+  position: fixed;
+  width: 118px;
+  height: 38px;
+  border: 1px solid #f1f2f7;
+  box-shadow: 0 0 4px 6px rgba(0, 51, 255, 0.04);
+  border-radius: 8px 8px 0 0;
+  background-color: #fff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 85% auto;
+}
+.slider-nav-left, .slider-nav-right {
+  top: 50%;
+}
+.slider-nav-left {
+  left: 0;
+  transform: rotate(90deg) translate(-118px, 40px);
+  background-image: url('../../assets/images/openstack.png');
+}
+.slider-nav-right {
+  right: 0;
+  transform: rotate(-90deg) translate(118px, 40px);
+  background-image: url('../../assets/images/kubernetes.png');
+}
+.slider-nav-bottom {
+  bottom: 0;
+  left: 50%;
+  transform: translate(-59px, 0);
+  background-image: url('../../assets/images/xclarity.png');
+}
+.XClarity {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  z-index: 100;
+  width: 85%;
+  min-width: 1200px;
+  height: calc(100% - 70px);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 2px 16px 16px 8px rgba(230, 222, 222, 0.5);
+  // background: url('../../assets/images/lenovo.png') no-repeat center top;
+  background-size: 100%;
+  background-color: #f1f2f7;
+  transform: translateX(-50%);
+  .close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 20px;
+    height: 20px;
+    line-height: 22px;
+    font-size: 16px;
+    color: #fff;
+    text-align: center;
+    border-radius: 100%;
+    background-color: #db0404;
+    cursor: pointer;
+    &:hover {
+      background-color: #f00;
+    }
+  }
+}
+.mask {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 99;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .17);
+  overflow: hidden;
+  transition: all 1s;
+}
+.mask-enter {
+  opacity: 0;
+}
+.mask-enter-active {
+  transition: all 1s ease-out;
+}
+.mask-leave-active {
+  transition: all .5s;
+}
+.xclarity-enter {
+  transform: translate(-50%, 1200px);
+  opacity: .7;
+}
+.xclarity-enter-active {
+  transition: all .7s ease;
+}
+.xclarity-leave-active {
+  transition: all .7s ease;
+}
+.xclarity-leave-to {
+  transform: translate(-50%, 1200px);
+  opacity: .7;
+}
+.verticals {
+  &>div:first-of-type {
+    width: 100%;
+    height: 120px;
+  }
+  &>div:last-of-type {
+    width: 100%;
+    height: 85px;
+  }
+}
+.standards {
+  display: flex;
+  &>div:first-of-type {
+    width: 69.9999%;
+    height: 100%;
+  }
+  &>div:last-of-type {
+    width: 29.9999%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    align-content: flex-end;
+  }
+}
+@media screen and (max-width: 1400px) {
+  .header .nav-container, .container, .XClarity {
+    width: 95%;
+  }
+}
+@media screen and (max-height: 960px) {
+  .header .nav-container, .container {
+    padding: 0 10px;
+  }
+  .container .card {
+    height: 280px;
+    padding: 10px;
+  }
+
+}

@@ -1,0 +1,14 @@
+<div class="main">
+  <div class="login-panel">
+    <div class="login-panel-logo">
+      <img src="../../assets/images/svg/logo-hybrid-cloud.svg">
+    </div>
+    <div class="login-content">
+      <div class="login-input-groups">
+        <at-input v-model="username" id="user" placeholder="用户名" @keyup.enter="login" autofocus></at-input>
+        <at-input v-model="password" id="pwd" type="password" placeholder="密码" @keyup.enter="login"></at-input>
+        <div class="login-btn" @click="login"><i class="icon icon-arrow-right"></i></div>
+      </div>
+    </div>
+  </div>
+</div>

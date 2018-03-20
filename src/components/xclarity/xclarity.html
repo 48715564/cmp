@@ -1,0 +1,163 @@
+<div class="container-x">
+  <div class="row">
+    <div class="col-24 item">
+      <at-collapse value="collapse1">
+        <at-collapse-item name="collapse1">
+          <div slot="title">硬件状态 </div>
+          <div class="top-item">
+            <!-- 服务器 -->
+
+            <div class="top-item-item top-item-width">
+              <div class="top-item-item-top">
+                <div class="icon icon-server" style="font-size: 2rem"></div>
+                <div class="item-margin-right">{{server.allCount}}个服务器</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="正常"><span class="text-span">{{server.okCount}}</span></div>
+                <div class="icon myicon-jinggao small-icon" title="警告"><span class="text-span">{{server.warningCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="错误"><span class="text-span">{{server.criticalCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 存储器 -->
+            <div class="top-item-item top-item-width">
+              <div class="top-item-item-top">
+                <div class="icon myicon-cipan" style="font-size: 2rem"></div>
+                <div class="item-margin-right">{{storage.allCount}}个存储器</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="正常"><span class="text-span">{{storage.okCount}}</span></div>
+                <div class="icon myicon-jinggao small-icon" title="警告"><span class="text-span">{{storage.warningCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="错误"><span class="text-span">{{storage.criticalCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 交换机 -->
+            <div class="top-item-item top-item-width">
+              <div class="top-item-item-top">
+                <div class="icon myicon-jiaohuanji" style="font-size: 2rem"></div>
+                <div class="item-margin-right">{{switchInfo.allCount}}个交换机</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="正常"><span class="text-span">{{switchInfo.okCount}}</span></div>
+                <div class="icon myicon-jinggao small-icon" title="警告"><span class="text-span">{{switchInfo.warningCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="错误"><span class="text-span">{{switchInfo.criticalCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 机箱 -->
+            <div class="top-item-item top-item-width">
+              <div class="top-item-item-top">
+                <div class="icon myicon-jixiang" style="font-size: 2rem"></div>
+                <div class="item-margin-right">{{chassis.allCount}}个机箱</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="正常"><span class="text-span">{{chassis.okCount}}</span></div>
+                <div class="icon myicon-jinggao small-icon" title="警告"><span class="text-span">{{chassis.warningCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="错误"><span class="text-span">{{chassis.criticalCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 机架 -->
+            <div class="top-item-item top-item-width">
+              <div class="top-item-item-top">
+                <div class="icon myicon-jijia" style="font-size: 2rem"></div>
+                <div class="item-margin-right">{{rack.allCount}}个机架</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="正常"><span class="text-span">{{rack.okCount}}</span></div>
+                <div class="icon myicon-jinggao small-icon" title="警告"><span class="text-span">{{rack.warningCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="错误"><span class="text-span">{{rack.criticalCount}}</span></div>
+              </div>
+            </div>
+          </div>
+        </at-collapse-item>
+      </at-collapse>
+    </div>
+  </div>
+
+  <div class="row item">
+    <div class="col-24 item">
+      <at-collapse value="collapse1">
+        <at-collapse-item name="collapse1">
+          <div slot="title">配置状态 </div>
+          <div class="top-item">
+            <!-- Configuration Patterns -->
+            <div class="top-item-item" style="width: 30%">
+              <div class="top-item-item-top">
+                <div class="icon myicon-peizhiconfiguration15" style="font-size: 2rem"></div>
+                <div class="item-margin-right">Configuration Patterns</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="具有Profiles的服务器"><span class="text-span">{{configPatterns.withAssignedPatternsCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="不具有Profiles的服务器"><span class="text-span">{{configPatterns.withoutAssignedPatternsCount}}</span></div>
+                <div class="icon myicon-yunxingzhong small-icon" title="正在部署Server Pattern"><span class="text-span">{{configPatterns.deploysInProgressCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 操作系统映像 -->
+            <div class="top-item-item" style="width: 30%">
+              <div class="top-item-item-top">
+                <div class="icon myicon-operatingsystem" style="font-size: 2rem"></div>
+                <div class="item-margin-right">操作系统映像</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="可获得的镜像数量"><span class="text-span">{{systemImages.availableOSImagesCount}}</span></div>
+                <div class="icon myicon-yunxingzhong small-icon" title="部署中的镜像数量"><span class="text-span">{{systemImages.deploysInProgressCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 固件更新 -->
+            <div class="top-item-item" style="width: 30%">
+              <div class="top-item-item-top">
+                <div class="icon myicon-gujian" style="font-size: 2rem"></div>
+                <div class="item-margin-right">固件更新</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-zhengchang small-icon" title="设备合规"><span class="text-span">{{firmwares.compliantDevicesCount}}</span></div>
+                <div class="icon myicon-cuowu small-icon" title="设备不合规"><span class="text-span">{{firmwares.noncompliantDevices}}</span></div>
+                <div class="icon myicon-jinggao small-icon" title="设备无策略"><span class="text-span">{{firmwares.notSetCompliancePolicyCount}}</span></div>
+                <div class="icon myicon-yunxingzhong small-icon" title="正在更新"><span class="text-span">{{firmwares.updatesInProgressCount}}</span></div>
+              </div>
+            </div>
+          </div>
+        </at-collapse-item>
+      </at-collapse>
+    </div>
+  </div>
+
+  <div class="row item">
+    <div class="col-24 item">
+      <at-collapse value="collapse1">
+        <at-collapse-item name="collapse1">
+          <div slot="title">活动</div>
+          <div class="top-item">
+            <!-- 作业 -->
+            <div class="top-item-item" style="width: 30%;height: 250px">
+              <div class="top-item-item-top">
+                <div class="icon myicon-zuoye" style="font-size: 2rem"></div>
+                <div class="item-margin-right">作业</div>
+              </div>
+              <div class="top-item-item-bottom">
+                <div class="icon myicon-yunxingzhong small-icon" title="活动中的作业"><span class="text-span">{{jobs.jobsCount}}</span></div>
+              </div>
+            </div>
+
+            <!-- 活动会话 -->
+            <div class="top-item-item" style="width: 30%;justify-content:flex-start;height: 250px">
+              <div class="card-title">活动会话</div>
+              <at-table :columns="sessions.columns" :data="sessions.data" border style="flex:1;width:90%"></at-table>
+            </div>
+
+            <!-- XClarity 系统资源 -->
+            <!-- 活动会话 -->
+            <div class="top-item-item" style="width: 30%;justify-content:flex-start;height: 250px">
+              <div class="card-title">XClarity系统资源</div>
+              <at-table :columns="sysResources.columns" :data="sysResources.data" border style="flex:1;width:90%"></at-table>
+            </div>
+          </div>
+        </at-collapse-item>
+      </at-collapse>
+    </div>
+  </div>
+</div>
