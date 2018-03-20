@@ -125,12 +125,6 @@ export default {
         this.historyData = false;
       }
     });
-    // setInterval(() => {
-    //   this.drawing();
-    // }, 5000);
-    window.onresize = () => {
-      // this.drawing();
-    };
   },
   components: {Xclarity},
 };
