@@ -1,177 +1,150 @@
 import CanvasService from '@/services/CanvasService.js';
-import OpenStackService from '@/services/OpenStackService.js';
+import VMWareService from '@/services/VMWareService.js';
 import Xclarity from '@/components/xclarity/xclarity.vue';
 
 const loadMsg = '加载中...';
-const loadErrorMsg = '服务端异常';
+const loadErrorMsg = [];
 export default {
   name: 'dashboard',
   data() {
     return {
+      columns1: [
+        {
+          title: '名称',
+          key: 'name'
+        },
+        {
+          title: '健康状态',
+          key: 'overallStatus'
+        },
+        {
+          title: '连接状态',
+          key: 'runtime.connectionState'
+        }, {
+          title: '操作',
+          render: (h, params) => {
+            return h('div', [
+              h('AtButton', {
+                props: {
+                  size: 'small',
+                  hollow: true
+                },
+                style: {
+                  marginRight: '8px'
+                },
+                on: {
+                  click: () => {
+                    this.on_selection_change(params.item.name)
+                  }
+                }
+              }, '查看')
+            ])
+          }
+        }
+      ],
+      data1: [],
       data: {
-        hypervisorCount: loadMsg,
-        runningVmCount: loadMsg,
-        local: loadMsg,
-        virtualCpu: loadMsg,
-        memory: loadMsg,
-        networkCount: loadMsg
+        dataCenterList: loadMsg,
+        hostList: loadMsg,
+        clusterList: loadMsg,
+        vmList: loadMsg,
+        dsList: loadMsg,
+        networkList: loadMsg,
       },
       dataStatus: true,
       historyData: true,
-      isXClarity:false,
+      isXClarity: false,
+      hostName: ''
     }
   },
   methods: {
-    openstackShow() {
-      this.$Modal.alert('OpenStack 暂未开放！');
+    on_selection_change(data){
+      if(this.hostName!=data){
+        this.hostName=data;
+      }
+    },
+    gotoVMWare(){
+      window.open('http://10.0.2.5:5000/v3');
     },
     kubernetesShow() {
       this.$Modal.alert('Kubernetes 暂未开放！');
     },
-    //拆分时间
-    getChartXLineData(data) {
-      let dateArray = [];
-      let startDate = '';
-      let endDate = '';
-      let title = '';
-      for (let i = 0; i < data.length; i++) {
-        dateArray.push(data[i].createTm.split(" ")[0]);
-        if (i == 0) {
-          startDate = data[i].createTm.split(" ")[0];
-        } else if (i == data.length - 1) {
-          endDate = data[i].createTm.split(" ")[0];
+    getHostName(hostList) {
+      if (hostList && hostList.length > 0) {
+        let temp = hostList[0]['propSet'];
+        for (let i = 0; i < temp.length; i++) {
+          if (temp[i]['name'] == 'name') {
+            return temp[i]['val'];
+          }
         }
       }
-      if (startDate == endDate) {
-        title = startDate + "数据";
-      } else {
-        title = startDate + "至" + endDate + "数据";
-      }
-      return {xData: dateArray, title: title};
     },
-    //获得cpu信息
-    getCpuChartData(data) {
-      return [{
-        name: '可用cpu总数',
-        value: data.virtualCpu - data.virtualUsedCpu,
-      }, {
-        name: '已用cpu总数',
-        value: data.virtualUsedCpu,
+    getHostTables(hostList) {
+      let data = [];
+      if (hostList && hostList.length > 0) {
+        for (let count = 0;count < hostList.length ;count++) {
+          let temp = hostList[count]["propSet"];
+
+          let json = {};
+          for (let i = 0; i < temp.length; i++) {
+            json[temp[i].name] = temp[i]['val'];
+          }
+          data.push(json);
+        }
       }
-      ]
+      return data;
     },
-    //获得内存信息
-    getMemoryChartData(data) {
-      return [{
-        name: '可用内存大小',
-        value: data.memory - data.memoryUsed,
-      }, {
-        name: '已用内存大小',
-        value: data.memoryUsed,
+    getLineData(data){
+      let returnData = {};
+      returnData.xData = data.xLine;
+      for(let i = 0 ;i<data.longs.length;i++){
+        if(data.longs[i].instance==''){
+          returnData.yData = data.longs[i].list;
+          break;
+        }
       }
-      ]
+
+      return returnData;
     },
-    //获得存储信息
-    getStoreChartData(data) {
-      return [{
-        name: '空闲磁盘大小',
-        value: data.freeDisk,
-      }, {
-        name: '已用磁盘大小',
-        value: data.localUsed,
-      }]
-    },
-    //获得cpu信息
-    getCpuChartYLineData(data){
-      let cpuCountArray = [];
-      let cpuUseCountArray = [];
-      for(let i = 0 ; i< data.length; i++){
-        cpuCountArray.push(data[i].virtualCpu);
-        cpuUseCountArray.push(data[i].virtualUsedCpu);
+    loadMonitorData(val){
+      VMWareService.getMonitorData(val).then((res) => {
+        if (res.data.success) {
+          this.dataStatus = true;
+          CanvasService.drawCPUDepletionGraph(this.$refs.cpuLine, this.getLineData(res.data.result.cpuMap));
+          CanvasService.drawMemoryDepletionGraph(this.$refs.ramLine, this.getLineData(res.data.result.memMap));
+          CanvasService.drawStoreDepletionGraph(this.$refs.storeLine, this.getLineData(res.data.result.diskMap));
+          CanvasService.drawNetWorkDepletionGraph(this.$refs.networkLine, this.getLineData(res.data.result.netMap));
+        }else{
+          this.dataStatus=false;
+        }
+      });
       }
-      return {
-        cpuCountData:cpuCountArray,
-        cpuUseCountData:cpuUseCountArray,
-      }
-    },
-    //获得内存信息
-    getMemoryChartYLineData(data){
-      let memoryCountArray = [];
-      let memoryUseCountArray = [];
-      for(let i = 0 ; i< data.length; i++){
-        memoryCountArray.push(data[i].memory);
-        memoryUseCountArray.push(data[i].memoryUsed);
-      }
-      return {
-        memoryCountData:memoryCountArray,
-        memoryUseCountData:memoryUseCountArray,
-      }
-    },
-    //获得存储信息
-    getStoreChartYLineData(data){
-      let localArray = [];
-      let localUseArray = [];
-      for(let i = 0 ; i< data.length; i++){
-        localArray.push(data[i].local);
-        localUseArray.push(data[i].localUsed);
-      }
-      return {
-        localArray,
-        localUseArray
-      }
-    },
-    //获得网络信息
-    getNetChartYLineData(data) {
-      let netCountArray = [];
-      for (let i = 0; i < data.length; i++) {
-        netCountArray.push(data[i].networkCount);
-      }
-      return {
-        netCountArray: netCountArray
-      }
-    },
-    server() {
-    },
   },
   mounted() {
-    OpenStackService.openStackInfo().then((res) => {
+    VMWareService.VMWareInfo().then((res) => {
       if (res.data.success) {
         this.data = res.data.result;
-        CanvasService.drawCPUDepletionGraphBar(this.$refs.cpu, this.getCpuChartData(this.data));
-        CanvasService.drawMemoryDepletionGraphBar(this.$refs.ram, this.getMemoryChartData(this.data));
-        CanvasService.drawStoreDepletionGraphBar(this.$refs.store, this.getStoreChartData(this.data));
+        if (this.data.hostList && this.data.hostList.length > 0) {
+          this.hostName = this.getHostName(this.data.hostList);
+          this.data1 = this.getHostTables(this.data.hostList);
+        }
       } else {
         this.dataStatus = false;
         this.data = {
-          hypervisorCount: loadErrorMsg,
-          runningVmCount: loadErrorMsg,
-          local: loadErrorMsg,
-          virtualCpu: loadErrorMsg,
-          memory: loadErrorMsg,
-          networkCount: loadErrorMsg
+          dataCenterList: loadErrorMsg,
+          hostList: loadErrorMsg,
+          clusterList: loadErrorMsg,
+          vmList: loadErrorMsg,
+          dsList: loadErrorMsg,
+          networkList: loadErrorMsg
         }
       }
     });
-    OpenStackService.openStackInfoHistory().then((res) => {
-      if (res.data.success) {
-        const tmpData = res.data.result.list;
-        const xLineData = this.getChartXLineData(tmpData);
-        const yLineData = this.getCpuChartYLineData(tmpData);
-        const cpuData = {...xLineData,yData:yLineData};
-        CanvasService.drawCPUDepletionGraph(this.$refs.cpuLine,cpuData);
-        const yMemoryData = this.getMemoryChartYLineData(tmpData);
-        const memoryData = {...xLineData,yData:yMemoryData};
-        CanvasService.drawMemoryDepletionGraph(this.$refs.ramLine,memoryData);
-        const yNetWorkData = this.getNetChartYLineData(tmpData);
-        const netData = {...xLineData,yData:yNetWorkData};
-        CanvasService.drawNetWorkDepletionGraph(this.$refs.network,netData);
-        const yStoreData = this.getStoreChartYLineData(tmpData);
-        const storeData = {...xLineData,yData:yStoreData};
-        CanvasService.drawStoreDepletionGraph(this.$refs.storeLine,storeData);
-      } else {
-        this.historyData = false;
-      }
-    });
+  },
+  watch: {
+    hostName(curVal, oldVal) {
+      this.loadMonitorData(curVal);
+    }
   },
   components: {Xclarity},
 };

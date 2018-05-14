@@ -3,8 +3,8 @@ const API = process.env.BASE_URL;
 module.exports = {
   api: {
     userLogin: `${API}/auth`,
-    openStackInfo: `${API}/OpenStack/info`,
-    openStackInfoPage: `${API}/OpenStack/infoPage`,
+    VMWareInfo: `${API}/VMware/all`,
+    VMMonitorData: `${API}/VMware/getMonitorData`,
     xClarity_hardwareList: `${API}/XClarity/hardwareList`,
     xClarity_configPatterns:`${API}/XClarity/configPatterns`,
     xClarity_systemImages:`${API}/XClarity/systemImages`,

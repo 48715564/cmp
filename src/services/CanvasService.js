@@ -27,67 +27,13 @@ const middle = 'middle';
 const defaultXData = ['', '', '', '', '', '', '', '', '', ''];
 /* eslint-enable */
 
-const drawCPUDepletionGraphBar = (el, data) => {
-  const Chart = Echarts.init(el);
-  Chart.setOption({
-    tooltip: {
-      trigger: 'item',
-      formatter: "{b} : {c} ({d}%)"
-    },
-    series: [
-      {
-        name: 'cpu使用情况',
-        type: 'pie',
-        data: data,
-        radius : '55%',
-        itemStyle: {
-          emphasis: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  });
-  return Chart;
-};
-
-const drawMemoryDepletionGraphBar = (el, data) => {
-  const Chart = Echarts.init(el);
-  Chart.setOption({
-    tooltip: {
-      trigger: 'item',
-      formatter: "{b}MB : {c}MB ({d}%)"
-    },
-    series: [
-      {
-        name: '内存使用情况',
-        type: 'pie',
-        radius : '55%',
-        data: data,
-        itemStyle: {
-          emphasis: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  });
-  return Chart;
-};
-
 const drawNetWorkDepletionGraph = (el, data) => {
   const Chart = Echarts.init(el);
   if (!data) {
     data = {
       title: '',
       xData: null,
-      yData: {
-        netCountArray: null
-      }
+      yData: []
     };
   }
   Chart.setOption({
@@ -106,7 +52,7 @@ const drawNetWorkDepletionGraph = (el, data) => {
     },
     grid: {
       top: '30px',
-      left: '0',
+      left: '30px',
       right: '18px',
       bottom: '10px',
       containLabel: true,
@@ -125,44 +71,15 @@ const drawNetWorkDepletionGraph = (el, data) => {
     ],
     series: [
       {
-        name: '网络数',
+        name: '传输和接收总速度',
         type: 'line',
         stack: 'network',
-        data: data.yData.netCountArray,
+        data: data.yData,
       },
     ],
   });
   return Chart;
 };
-
-const drawStoreDepletionGraphBar = (el, data) => {
-  const Chart = Echarts.init(el);
-  Chart.setOption({
-    tooltip : {
-      trigger: 'item',
-      formatter: "{b}GB : {c}GB ({d}%)"
-    },
-    series : [
-      {
-        name: '磁盘使用情况',
-        type: 'pie',
-        data: data,
-        radius : '55%',
-        itemStyle: {
-          emphasis: {
-            shadowBlur: 10,
-            shadowOffsetX: 0,
-            shadowColor: 'rgba(0, 0, 0, 0.5)'
-          }
-        }
-      }
-    ]
-  });
-  return Chart;
-};
-
-
-
 
 const drawCPUDepletionGraph = (el,data) => {
   const Chart = Echarts.init(el);
@@ -170,10 +87,7 @@ const drawCPUDepletionGraph = (el,data) => {
     data = {
       title:'',
       xData:null,
-      yData:{
-        cpuCountData:null,
-        cpuUseCountData:null,
-      }
+      yData:[]
     };
   }
   Chart.setOption({
@@ -183,6 +97,10 @@ const drawCPUDepletionGraph = (el,data) => {
     },
     tooltip: {
       trigger: 'axis',
+      formatter: function (params, ticket, callback){
+        let val = params[0].seriesName+":"+(params[0].value/100)+"%<br/>"+params[0].name;
+        return val;
+      },
       axisPointer: {
         type: 'cross',
         label: {
@@ -192,7 +110,7 @@ const drawCPUDepletionGraph = (el,data) => {
     },
     grid: {
       top: '30px',
-      left: '0',
+      left: '30px',
       right: '18px',
       bottom: '10px',
       containLabel: true,
@@ -208,30 +126,30 @@ const drawCPUDepletionGraph = (el,data) => {
     ],
     yAxis: [
       {
-        type: 'value',
-        // max: '100',
-        min: '0',
-        minInterval: '1',
-        axisLine: {
-          onZero: false,
-          lineStyle: {
-            color: $greyDark,
-          },
+        axisLabel: {
+          formatter: function (val) {
+            return val/100 + '%';
+          }
         },
+        axisPointer: {
+          label: {
+            formatter: function (params) {
+              return ((params.value)/100).toFixed(1) + '%';
+            }
+          }
+        },
+        splitNumber: 3,
+        splitLine: {
+          show: false
+        }
       },
     ],
     series: [
       {
-        name: 'CPU总数',
+        name: 'CPU使用率',
         type: 'line',
         stack: 'cpu',
-        data: data.yData.cpuCountData,
-      },
-      {
-        name: '已使用CPU数量',
-        type: 'line',
-        stack: 'cpu',
-        data: data.yData.cpuUseCountData,
+        data: data.yData,
       },
     ],
   });
@@ -244,10 +162,7 @@ const drawMemoryDepletionGraph = (el,data) => {
     data = {
       title:'',
       xData:null,
-      yData:{
-        memoryCountData:null,
-        memoryUseCountData:null,
-      }
+      yData:[]
     };
   }
   Chart.setOption({
@@ -257,6 +172,10 @@ const drawMemoryDepletionGraph = (el,data) => {
     },
     tooltip: {
       trigger: 'axis',
+      formatter: function (params, ticket, callback){
+        let val = params[0].seriesName+":"+(params[0].value/100)+"%<br/>"+params[0].name;
+        return val;
+      },
       axisPointer: {
         type: 'cross',
         label: {
@@ -266,7 +185,7 @@ const drawMemoryDepletionGraph = (el,data) => {
     },
     grid: {
       top: '30px',
-      left: '0',
+      left: '30px',
       right: '18px',
       bottom: '10px',
       containLabel: true,
@@ -282,31 +201,31 @@ const drawMemoryDepletionGraph = (el,data) => {
     ],
     yAxis: [
       {
-        type: 'value',
-        // max: '100',
-        min: '0',
-        minInterval: '1',
-        axisLine: {
-          onZero: false,
-          lineStyle: {
-            color: $greyDark,
-          },
+        axisLabel: {
+          formatter: function (val) {
+            return val/100 + '%';
+          }
         },
+        axisPointer: {
+          label: {
+            formatter: function (params) {
+              return ((params.value)/100).toFixed(1) + '%';
+            }
+          }
+        },
+        splitNumber: 3,
+        splitLine: {
+          show: false
+        }
       },
     ],
     series: [
       {
-        name: '内存总数',
+        name: '内存使用率',
         type: 'line',
         stack: 'memory',
-        data: data.yData.memoryCountData,
-      },
-      {
-        name: '已使用内存数量',
-        type: 'line',
-        stack: 'memory',
-        data: data.yData.memoryUseCountData,
-      },
+        data: data.yData,
+      }
     ],
   });
   return Chart;
@@ -319,10 +238,7 @@ const drawStoreDepletionGraph = (el,data) => {
     data = {
       title:'',
       xData:null,
-      yData:{
-        localArray:null,
-        localUseArray:null
-      }
+      yData:[]
     };
   }
   Chart.setOption({
@@ -341,7 +257,7 @@ const drawStoreDepletionGraph = (el,data) => {
     },
     grid: {
       top: '30px',
-      left: '0',
+      left: '30px',
       right: '18px',
       bottom: '10px',
       containLabel: true,
@@ -361,35 +277,24 @@ const drawStoreDepletionGraph = (el,data) => {
         // max: '100',
         min: '0',
         minInterval: '1',
-        axisLine: {
-          onZero: false,
-          lineStyle: {
-            color: $greyDark,
-          },
-        },
+        splitLine: {
+          show: false
+        }
       },
     ],
     series: [
       {
-        name: '本地储存',
+        name: '汇总的磁盘I/O速度',
         type: 'line',
         stack: 'store',
-        data: data.yData.localArray,
-      },{
-        name: '已使用本地存储',
-        type: 'line',
-        stack: 'store',
-        data: data.yData.localUseArray,
-      },
+        data: data.yData,
+      }
     ],
   });
   return Chart;
 };
 export default {
-  drawCPUDepletionGraphBar,
-  drawMemoryDepletionGraphBar,
   drawNetWorkDepletionGraph,
-  drawStoreDepletionGraphBar,
   drawCPUDepletionGraph,
   drawMemoryDepletionGraph,
   drawStoreDepletionGraph,
