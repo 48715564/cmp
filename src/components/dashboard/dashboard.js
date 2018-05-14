@@ -22,8 +22,8 @@ export default {
     }
   },
   methods: {
-    openstackShow() {
-      this.$Modal.alert('OpenStack 暂未开放！');
+    gotoOpenStack() {
+      window.open("http://10.0.2.5");
     },
     kubernetesShow() {
       this.$Modal.alert('Kubernetes 暂未开放！');
