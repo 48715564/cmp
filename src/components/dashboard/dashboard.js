@@ -66,9 +66,6 @@ export default {
     gotoVMWare(){
       window.open('http://10.0.2.5:5000/v3');
     },
-    kubernetesShow() {
-      this.$Modal.alert('Kubernetes 暂未开放！');
-    },
     getHostName(hostList) {
       if (hostList && hostList.length > 0) {
         let temp = hostList[0]['propSet'];
