@@ -52,10 +52,10 @@ export default {
     //获得cpu信息
     getCpuChartData(data) {
       return [{
-        name: '可用cpu总数',
+        name: '可用',
         value: data.virtualCpu - data.virtualUsedCpu,
       }, {
-        name: '已用cpu总数',
+        name: '已用',
         value: data.virtualUsedCpu,
       }
       ]
@@ -63,10 +63,10 @@ export default {
     //获得内存信息
     getMemoryChartData(data) {
       return [{
-        name: '可用内存大小',
+        name: '可用',
         value: data.memory - data.memoryUsed,
       }, {
-        name: '已用内存大小',
+        name: '已用',
         value: data.memoryUsed,
       }
       ]
@@ -74,10 +74,10 @@ export default {
     //获得存储信息
     getStoreChartData(data) {
       return [{
-        name: '空闲磁盘大小',
+        name: '可用',
         value: data.freeDisk,
       }, {
-        name: '已用磁盘大小',
+        name: '已用',
         value: data.localUsed,
       }]
     },
