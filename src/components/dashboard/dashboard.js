@@ -8,6 +8,10 @@ export default {
   name: 'dashboard',
   data() {
     return {
+      CPUDepletionGraph: null,
+      MemoryDepletionGraph: null,
+      StoreDepletionGraph: null,
+      NetWorkDepletionGraph: null,
       columns1: [
         {
           title: '名称',
@@ -58,12 +62,12 @@ export default {
     }
   },
   methods: {
-    on_selection_change(data){
-      if(this.hostName!=data){
-        this.hostName=data;
+    on_selection_change(data) {
+      if (this.hostName != data) {
+        this.hostName = data;
       }
     },
-    gotoVMWare(){
+    gotoVMWare() {
       window.open('https://10.0.7.45/');
     },
     getHostName(hostList) {
@@ -79,7 +83,7 @@ export default {
     getHostTables(hostList) {
       let data = [];
       if (hostList && hostList.length > 0) {
-        for (let count = 0;count < hostList.length ;count++) {
+        for (let count = 0; count < hostList.length; count++) {
           let temp = hostList[count]["propSet"];
 
           let json = {};
@@ -91,11 +95,11 @@ export default {
       }
       return data;
     },
-    getLineData(data){
+    getLineData(data) {
       let returnData = {};
       returnData.xData = data.xLine;
-      for(let i = 0 ;i<data.longs.length;i++){
-        if(data.longs[i].instance==''){
+      for (let i = 0; i < data.longs.length; i++) {
+        if (data.longs[i].instance == '') {
           returnData.yData = data.longs[i].list;
           break;
         }
@@ -103,21 +107,75 @@ export default {
 
       return returnData;
     },
-    loadMonitorData(val){
+    loadMonitorData(val) {
       VMWareService.getMonitorData(val).then((res) => {
         if (res.data.success) {
           this.dataStatus = true;
-          CanvasService.drawCPUDepletionGraph(this.$refs.cpuLine, this.getLineData(res.data.result.cpuMap));
-          CanvasService.drawMemoryDepletionGraph(this.$refs.ramLine, this.getLineData(res.data.result.memMap));
-          CanvasService.drawStoreDepletionGraph(this.$refs.storeLine, this.getLineData(res.data.result.diskMap));
-          CanvasService.drawNetWorkDepletionGraph(this.$refs.networkLine, this.getLineData(res.data.result.netMap));
-        }else{
-          this.dataStatus=false;
+          this.CPUDepletionGraph = CanvasService.drawCPUDepletionGraph(this.$refs.cpuLine, this.getLineData(res.data.result.cpuMap));
+          this.MemoryDepletionGraph = CanvasService.drawMemoryDepletionGraph(this.$refs.ramLine, this.getLineData(res.data.result.memMap));
+          this.StoreDepletionGraph = CanvasService.drawStoreDepletionGraph(this.$refs.storeLine, this.getLineData(res.data.result.diskMap));
+          this.NetWorkDepletionGraph = CanvasService.drawNetWorkDepletionGraph(this.$refs.networkLine, this.getLineData(res.data.result.netMap));
+        } else {
+          this.dataStatus = false;
         }
       });
-      }
+    },
+    reloadMonitorData(){
+        VMWareService.getMonitorData(this.hostName).then((res) => {
+          if (res.data.success) {
+            if (this.CPUDepletionGraph) {
+              let data = this.getLineData(res.data.result.cpuMap);
+              this.CPUDepletionGraph.setOption({
+                xAxis: [{
+                  data: data.xData,
+                }],
+                series: [{
+                  data: data.yData
+                }]
+              });
+            }
+
+            if (this.MemoryDepletionGraph) {
+              let data = this.getLineData(res.data.result.memMap);
+              this.MemoryDepletionGraph.setOption({
+                xAxis: [{
+                  data: data.xData,
+                }],
+                series: [{
+                  data: data.yData
+                }]
+              });
+            }
+
+            if (this.StoreDepletionGraph) {
+              let data = this.getLineData(res.data.result.diskMap);
+              this.StoreDepletionGraph.setOption({
+                xAxis: [{
+                  data: data.xData,
+                }],
+                series: [{
+                  data: data.yData
+                }]
+              });
+            }
+
+            if (this.NetWorkDepletionGraph) {
+              let data = this.getLineData(res.data.result.netMap);
+              this.NetWorkDepletionGraph.setOption({
+                xAxis: [{
+                  data: data.xData,
+                }],
+                series: [{
+                  data: data.yData
+                }]
+              });
+            }
+          }
+        })
+    }
   },
   mounted() {
+    setInterval(this.reloadMonitorData, 20000);
     VMWareService.VMWareInfo().then((res) => {
       if (res.data.success) {
         this.data = res.data.result;
