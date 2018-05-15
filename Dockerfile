@@ -9,8 +9,13 @@
  WORKDIR /app
 
  # 安装项目依赖包
- RUN npm install
- RUN npm rebuild node-sass --force
+ RUN npm config set registry https://registry.npm.taobao.org --global && npm config set disturl https://npm.taobao.org/dist --global
+
+ RUN npm install -g yarn
+
+ RUN yarn config set registry https://registry.npm.taobao.org --global && yarn config set disturl https://npm.taobao.org/dist --global
+
+ RUN yarn
 
  # 配置环境变量
  ENV HOST 0.0.0.0

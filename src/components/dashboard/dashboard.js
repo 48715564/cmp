@@ -64,7 +64,7 @@ export default {
       }
     },
     gotoVMWare(){
-      window.open('http://10.0.2.5:5000/v3');
+      window.open('https://10.0.7.45/');
     },
     getHostName(hostList) {
       if (hostList && hostList.length > 0) {
