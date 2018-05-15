@@ -10,7 +10,7 @@ function resolve (dir) {
 }
 
 const DEFAULT_ENV = {
-  BASE_URL: '"http://127.0.0.1:8808"',
+  BASE_URL: '"http://10.0.11.15:32444"',
   POST_URL: '""',
   DOMAIN: '""',
 };
