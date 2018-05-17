@@ -4,7 +4,12 @@ module.exports = {
   api: {
     userLogin: `${API}/auth`,
     VMWareInfo: `${API}/VMware/all`,
-    VMMonitorData: `${API}/VMware/getMonitorData`,
+    VMHostMonitorData: `${API}/VMware/getHostMonitorData`,
+    VMDataCenterMonitorData: `${API}/VMware/getDataCenterMonitorData`,
+    VMClusterMonitorData: `${API}/VMware/getClusterMonitorData`,
+    VMMonitorData: `${API}/VMware/getVMMonitorData`,
+    VMDSMonitorData: `${API}/VMware/getDSMonitorData`,
+    VMNetworkMonitorData: `${API}/VMware/getNetworkMonitorData`,
     xClarity_hardwareList: `${API}/XClarity/hardwareList`,
     xClarity_configPatterns:`${API}/XClarity/configPatterns`,
     xClarity_systemImages:`${API}/XClarity/systemImages`,

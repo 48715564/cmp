@@ -26,276 +26,139 @@ const center = 'center';
 const middle = 'middle';
 const defaultXData = ['', '', '', '', '', '', '', '', '', ''];
 /* eslint-enable */
-
-const drawNetWorkDepletionGraph = (el, data) => {
-  const Chart = Echarts.init(el);
-  if (!data) {
-    data = {
-      title: '',
-      xData: null,
-      yData: []
-    };
-  }
-  Chart.setOption({
-    title: {
-      text: data.title,
-      x: 'center'
+const defaultTooltip = {
+  trigger: 'axis',
+  axisPointer: {
+    type: 'cross',
+    label: {
+      backgroundColor: $greyDark,
     },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross',
-        label: {
-          backgroundColor: $greyDark,
-        },
-      },
+  },
+};
+const percentageTooltip = {
+  trigger: 'axis',
+  formatter: function (params, ticket, callback) {
+    if (params[0].value) {
+      let val = params[0].seriesName + ":" + (params[0].value / 100) + "%<br/>" + params[0].name;
+      return val;
+    } else {
+      return params[0].seriesName + ":-";
+    }
+  },
+  axisPointer: {
+    type: 'cross',
+    label: {
+      backgroundColor: $greyDark,
     },
-    grid: {
-      top: '30px',
-      left: '30px',
-      right: '18px',
-      bottom: '10px',
-      containLabel: true,
-    },
-    xAxis: [
-      {
-        type: 'category',
-        data: data.xData
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value',
-        minInterval: '1'
-      },
-    ],
-    series: [
-      {
-        name: '传输和接收总速度',
-        type: 'line',
-        stack: 'network',
-        data: data.yData,
-      },
-    ],
-  });
-  return Chart;
+  },
 };
 
-const drawCPUDepletionGraph = (el,data) => {
-  const Chart = Echarts.init(el);
-  if(!data){
-    data = {
-      title:'',
-      xData:null,
-      yData:[]
-    };
-  }
-  Chart.setOption({
-    title:{
-      text: data.title,
-      x: 'center'
+const defaultYAxis = [
+  {
+    type: 'value',
+    minInterval: '1'
+  },
+];
+
+const percentageYAxis = [
+  {
+    axisLabel: {
+      formatter: function (val) {
+        return val / 100 + '%';
+      }
     },
-    tooltip: {
-      trigger: 'axis',
-      formatter: function (params, ticket, callback){
-        let val = params[0].seriesName+":"+(params[0].value/100)+"%<br/>"+params[0].name;
-        return val;
-      },
-      axisPointer: {
-        type: 'cross',
-        label: {
-          backgroundColor: $greyDark,
-        },
-      },
-    },
-    grid: {
-      top: '30px',
-      left: '30px',
-      right: '18px',
-      bottom: '10px',
-      containLabel: true,
-    },
-    xAxis : [
-      {
-        type : 'category',
-        data: data.xData,
-        axisTick: {
-          alignWithLabel: true
+    axisPointer: {
+      label: {
+        formatter: function (params) {
+          return ((params.value) / 100).toFixed(1) + '%';
         }
       }
-    ],
-    yAxis: [
-      {
-        axisLabel: {
-          formatter: function (val) {
-            return val/100 + '%';
-          }
-        },
-        axisPointer: {
-          label: {
-            formatter: function (params) {
-              return ((params.value)/100).toFixed(1) + '%';
+    },
+    splitNumber: 3,
+    splitLine: {
+      show: false
+    }
+  },
+];
+
+
+const DepletionGraphBar = (el, data,series) => {
+  if (data) {
+    Echarts.dispose(el);
+    const Chart = Echarts.init(el);
+    Chart.setOption({
+      tooltip: {
+        trigger: 'item'
+      },
+      series: [
+        {
+          name: series.name,
+          type: 'pie',
+          data: data,
+          itemStyle: {
+            emphasis: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
           }
-        },
-        splitNumber: 3,
-        splitLine: {
-          show: false
         }
-      },
-    ],
-    series: [
-      {
-        name: 'CPU使用率',
-        type: 'line',
-        stack: 'cpu',
-        data: data.yData,
-      },
-    ],
-  });
-  return Chart;
+      ]
+    });
+    return Chart;
+  }else{
+    el.innerHTML='暂无数据';
+  }
 };
 
-const drawMemoryDepletionGraph = (el,data) => {
-  const Chart = Echarts.init(el);
-  if(!data){
-    data = {
-      title:'',
-      xData:null,
-      yData:[]
-    };
-  }
-  Chart.setOption({
-    title:{
-      text: data.title,
-      x: 'center'
-    },
-    tooltip: {
-      trigger: 'axis',
-      formatter: function (params, ticket, callback){
-        let val = params[0].seriesName+":"+(params[0].value/100)+"%<br/>"+params[0].name;
-        return val;
+const DepletionGraph = (el, data, isPercentage, series) => {
+  if (data) {
+    Echarts.dispose(el);
+    const Chart = Echarts.init(el);
+    if (!data) {
+      data = {
+        title: '',
+        xData: null,
+        yData: []
+      };
+    }
+    Chart.setOption({
+      title: {
+        text: data.title,
+        x: 'center'
       },
-      axisPointer: {
-        type: 'cross',
-        label: {
-          backgroundColor: $greyDark,
-        },
+      tooltip: isPercentage ? percentageTooltip : defaultTooltip,
+      grid: {
+        top: '30px',
+        left: '30px',
+        right: '18px',
+        bottom: '10px',
+        containLabel: true,
       },
-    },
-    grid: {
-      top: '30px',
-      left: '30px',
-      right: '18px',
-      bottom: '10px',
-      containLabel: true,
-    },
-    xAxis : [
-      {
-        type : 'category',
-        data: data.xData,
-        axisTick: {
-          alignWithLabel: true
-        }
-      }
-    ],
-    yAxis: [
-      {
-        axisLabel: {
-          formatter: function (val) {
-            return val/100 + '%';
+      xAxis: [
+        {
+          type: 'category',
+          data: data.xData,
+          axisTick: {
+            alignWithLabel: true
           }
-        },
-        axisPointer: {
-          label: {
-            formatter: function (params) {
-              return ((params.value)/100).toFixed(1) + '%';
-            }
-          }
-        },
-        splitNumber: 3,
-        splitLine: {
-          show: false
         }
-      },
-    ],
-    series: [
-      {
-        name: '内存使用率',
-        type: 'line',
-        stack: 'memory',
-        data: data.yData,
-      }
-    ],
-  });
-  return Chart;
-};
-
-
-const drawStoreDepletionGraph = (el,data) => {
-  const Chart = Echarts.init(el);
-  if(!data){
-    data = {
-      title:'',
-      xData:null,
-      yData:[]
-    };
+      ],
+      yAxis: isPercentage ? percentageYAxis : defaultYAxis,
+      series: [
+        {
+          name: series.name,
+          type: 'line',
+          stack: series.stack,
+          data: data.yData,
+        },
+      ],
+    });
+    return Chart;
+  }else{
+    el.innerHTML='暂无数据';
   }
-  Chart.setOption({
-    title:{
-      text: data.title,
-      x: 'center'
-    },
-    tooltip: {
-      trigger: 'axis',
-      axisPointer: {
-        type: 'cross',
-        label: {
-          backgroundColor: $greyDark,
-        },
-      },
-    },
-    grid: {
-      top: '30px',
-      left: '30px',
-      right: '18px',
-      bottom: '10px',
-      containLabel: true,
-    },
-    xAxis : [
-      {
-        type : 'category',
-        data: data.xData,
-        axisTick: {
-          alignWithLabel: true
-        }
-      }
-    ],
-    yAxis: [
-      {
-        type: 'value',
-        // max: '100',
-        min: '0',
-        minInterval: '1',
-        splitLine: {
-          show: false
-        }
-      },
-    ],
-    series: [
-      {
-        name: '汇总的磁盘I/O速度',
-        type: 'line',
-        stack: 'store',
-        data: data.yData,
-      }
-    ],
-  });
-  return Chart;
 };
 export default {
-  drawNetWorkDepletionGraph,
-  drawCPUDepletionGraph,
-  drawMemoryDepletionGraph,
-  drawStoreDepletionGraph,
+  DepletionGraph,DepletionGraphBar
 };

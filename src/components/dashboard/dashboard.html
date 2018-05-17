@@ -2,7 +2,7 @@
   <header class="header">
     <div class="nav-container">
       <div class="nav-left">
-        <div class="logo">
+        <div class="logo" @click="mainType='0'">
           <img src="../../assets/images/svg/logo-hybrid-cloud.svg">
         </div>
       </div>
@@ -25,7 +25,19 @@
         <div class="item">
           <div class="icon myicon-jiqun" style="font-size: 2rem"></div>
           <div class="item-right">
-            <div style="text-align: center">{{data.dataCenterList instanceof Object?data.dataCenterList.length:data.dataCenterList}}
+            <div style="text-align: center" v-if="data.dataCenterList instanceof Object">
+              <at-popover trigger="click" placement="bottom">
+                <a href="javascript:void(0)">{{data.dataCenterList.length}}</a>
+                <template slot="content">
+                  <at-table :columns="columns2" :on-selection-change="on_selection_change" :data="data2"
+                            v-if="this.isShowHight(data.dataCenterList.length)" height="350"></at-table>
+                  <at-table :columns="columns2" :on-selection-change="on_selection_change" :data="data2"
+                            v-else></at-table>
+                </template>
+              </at-popover>
+            </div>
+            <div style="text-align: center" v-else>
+              {{data.dataCenterList}}
             </div>
             <div class="small-text">数据中心</div>
           </div>
@@ -36,7 +48,19 @@
         <div class="item">
           <div class="icon myicon-liuliangyunpingtaitubiao06" style="font-size: 2rem"></div>
           <div class="item-right">
-            <div style="text-align: center">{{data.clusterList instanceof Object?data.clusterList.length:data.clusterList}}
+            <div style="text-align: center" v-if="data.clusterList instanceof Object">
+              <at-popover trigger="click" placement="bottom">
+                <a href="javascript:void(0)">{{data.clusterList.length}}</a>
+                <template slot="content">
+                  <at-table :columns="columns3" :on-selection-change="on_selection_change" :data="data3"
+                            v-if="this.isShowHight(data.clusterList.length)" height="350"></at-table>
+                  <at-table :columns="columns3" :on-selection-change="on_selection_change" :data="data3"
+                            v-else></at-table>
+                </template>
+              </at-popover>
+            </div>
+            <div style="text-align: center" v-else>
+              {{data.clusterList}}
             </div>
             <div class="small-text">集群</div>
           </div>
@@ -51,7 +75,10 @@
               <at-popover trigger="click" placement="bottom">
                 <a href="javascript:void(0)">{{data.hostList.length}}</a>
                 <template slot="content">
-                  <at-table :columns="columns1" :on-selection-change	="on_selection_change" :data="data1"></at-table>
+                  <at-table :columns="columns1" :on-selection-change="on_selection_change" :data="data1"
+                            v-if="this.isShowHight(data.hostList.length)" height="350"></at-table>
+                  <at-table :columns="columns1" :on-selection-change="on_selection_change" :data="data1"
+                            v-else></at-table>
                 </template>
               </at-popover>
             </div>
@@ -68,7 +95,20 @@
         <div class="item">
           <div class="icon myicon-xuniji" style="font-size: 2rem"></div>
           <div class="item-right">
-            <div style="text-align: center">{{data.vmList instanceof Object?data.vmList.length:data.vmList}}</div>
+            <div style="text-align: center" v-if="data.vmList instanceof Object">
+              <at-popover trigger="click" placement="bottom">
+                <a href="javascript:void(0)">{{data.vmList.length}}</a>
+                <template slot="content">
+                  <at-table :columns="columns4" :on-selection-change="on_selection_change" :data="data4"
+                            v-if="this.isShowHight(data.vmList.length)" height="350" style="width: 400px"></at-table>
+                  <at-table :columns="columns4" :on-selection-change="on_selection_change" :data="data4" style="width: 400px"
+                            v-else></at-table>
+                </template>
+              </at-popover>
+            </div>
+            <div style="text-align: center" v-else>
+              {{data.vmList}}
+            </div>
             <div class="small-text">虚拟机</div>
           </div>
         </div>
@@ -79,7 +119,20 @@
         <div class="item">
           <div class="icon myicon-cipan" style="font-size: 2rem"></div>
           <div class="item-right">
-            <div style="text-align: center">{{data.dsList instanceof Object?data.dsList.length:data.dsList}}</div>
+            <div style="text-align: center" v-if="data.dsList instanceof Object">
+              <at-popover trigger="click" placement="bottom">
+                <a href="javascript:void(0)">{{data.dsList.length}}</a>
+                <template slot="content">
+                  <at-table :columns="columns5" :on-selection-change="on_selection_change" :data="data5"
+                            v-if="this.isShowHight(data.dsList.length)" height="350"></at-table>
+                  <at-table :columns="columns5" :on-selection-change="on_selection_change" :data="data5"
+                            v-else></at-table>
+                </template>
+              </at-popover>
+            </div>
+            <div style="text-align: center" v-else>
+              {{data.dsList}}
+            </div>
             <div class="small-text">存储</div>
           </div>
         </div>
@@ -90,57 +143,198 @@
         <div class="item">
           <div class="icon myicon-wangluo" style="font-size: 2rem"></div>
           <div class="item-right">
-            <div style="text-align: center">{{data.networkList instanceof Object?data.networkList.length:data.networkList}}
+            <div style="text-align: center" v-if="data.dsList instanceof Object">
+              <at-popover trigger="click" placement="bottom">
+                <a href="javascript:void(0)">{{data.networkList.length}}</a>
+                <template slot="content">
+                  <at-table :columns="columns6" :on-selection-change="on_selection_change" :data="data6"
+                            v-if="this.isShowHight(data.networkList.length)" height="350"></at-table>
+                  <at-table :columns="columns6" :on-selection-change="on_selection_change" :data="data6"
+                            v-else></at-table>
+                </template>
+              </at-popover>
+            </div>
+            <div style="text-align: center" v-else>
+              {{data.networkList}}
             </div>
             <div class="small-text">网络个数</div>
           </div>
         </div>
       </div>
     </div>
-    <!--使用情况-->
-    <div class="list-item row">
-      <at-badge :value="hostName" style="margin-left: 10px"></at-badge>
+    <div v-if="mainType=='0'">
+      <div class="list-item row">
+        <div class="card col-md-8">
+          <div class="item">
+            <p class="item-title">CPU</p>
+            <div class="item-content"
+                 style="width: 100%;height: 100%;display: flex;justify-content: center;align-items:center;flex-direction: column"
+                 v-if="dataStatus">
+              <div style="width: 80%;font-size: x-large;text-align: center">{{round(cpuAndMenInfo.freeCpuMhz)}} GHz 空闲
+              </div>
+              <div style="width: 80%;text-align: center">
+                <at-progress :percent="cpuPercent" :stroke-width="8"></at-progress>
+              </div>
+              <div style="width: 80%;font-size: larger;text-align: center">{{round(cpuAndMenInfo.usedCpuMhz)}} GHz已使用 |
+                {{round(cpuAndMenInfo.cpuMhz)}}GHz总计
+              </div>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
+          </div>
+        </div>
+        <div class="card col-md-8">
+          <div class="item">
+            <p class="item-title">内存</p>
+            <div class="item-content"
+                 style="width: 100%;height: 100%;display: flex;justify-content: center;align-items:center;flex-direction: column"
+                 v-if="dataStatus">
+              <div style="width: 80%;font-size: x-large;text-align: center">{{round(cpuAndMenInfo.freeMemorySize)}} GB
+                空闲
+              </div>
+              <div style="width: 80%;text-align: center">
+                <at-progress :percent="memPercent" :stroke-width="8"></at-progress>
+              </div>
+              <div style="width: 80%;font-size: larger;text-align: center">{{round(cpuAndMenInfo.usedMemorySize)}} GB
+                已使用 | {{round(cpuAndMenInfo.memorySize)}} GB 总计
+              </div>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
+          </div>
+        </div>
+        <div class="card col-md-8">
+          <div class="item">
+            <p class="item-title">存储</p>
+            <div class="item-content"
+                 style="width: 100%;height: 100%;display: flex;justify-content: center;align-items:center;flex-direction: column"
+                 v-if="dataStatus">
+              <div style="width: 80%;font-size: x-large;text-align: center">{{round(storeInfo.freeStore,2)}} TB 空闲</div>
+              <div style="width: 80%;text-align: center">
+                <at-progress :percent="storePercent" :stroke-width="8"></at-progress>
+              </div>
+              <div style="width: 80%;font-size: larger;text-align: center">{{round(storeInfo.usedStore)}} TB 已使用 |
+                {{round(storeInfo.store)}} TB 总计
+              </div>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
+          </div>
+        </div>
+
+        <div class="card col-md-12">
+          <div class="item">
+            <p class="item-title">虚拟机</p>
+            <div class="item-content"
+                 style="width: 100%;height: 100%;display: flex;justify-content: space-between;align-items:center;flex-direction: row"
+                 v-if="dataStatus">
+              <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;flex: 1">
+                <div style="font-size: x-large">{{vmPowerOn}}</div>
+                <div>电源打开</div>
+              </div>
+              <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;flex: 1">
+                <div style="font-size: x-large">{{vmPowerOff}}</div>
+                <div>电源关闭</div>
+              </div>
+              <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;flex: 1">
+                <div style="font-size: x-large">{{suspended}}</div>
+                <div>暂停</div>
+              </div>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
+          </div>
+        </div>
+
+        <div class="card col-md-12">
+          <div class="item">
+            <p class="item-title">主机</p>
+            <div class="item-content"
+                 style="width: 100%;height: 100%;display: flex;justify-content: space-between;align-items:center;flex-direction: row"
+                 v-if="dataStatus">
+              <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;flex: 1">
+                <div style="font-size: x-large">{{hostConnected}}</div>
+                <div>连接</div>
+              </div>
+              <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;flex: 1">
+                <div style="font-size: x-large">{{hostDisconnected}}</div>
+                <div>未连接</div>
+              </div>
+              <div style="display: flex;justify-content: center;align-items:center;flex-direction: column;flex: 1">
+                <div style="font-size: x-large">{{hostNotResponding}}</div>
+                <div>无响应</div>
+              </div>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="list-item row">
-      <!--CPU 使用率-->
-      <div class="card col-md-12">
-        <div class="item">
-          <p class="item-title">CPU使用率</p>
-          <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
-               v-if="dataStatus">
-            <div class="item-canvas" style="flex:1" ref="cpuLine">加载中...</div>
-          </div>
-          <div class="item-empty" v-else><p>暂无数据</p></div>
+    <div v-else-if="mainType=='5'">
+      <div class="list-item row">
+        <at-badge :value="moName" style="margin-left: 10px"></at-badge>
+      </div>
+      <div class="list-item row">
+        <div class="card col-md-12">
+          <graph name="存储使用情况(GB)" refname="bar1" :data-status="dataStatus"></graph>
+        </div>
+        <div class="card col-md-12">
+          <graph name="已使用(GB)" refname="line1" :data-status="dataStatus"></graph>
+        </div>
+        <div class="card col-md-12">
+          <graph name="已分配(GB)" refname="line2" :data-status="dataStatus"></graph>
+        </div>
+        <div class="card col-md-12">
+          <graph name="总容量(GB)" refname="line3" :data-status="dataStatus"></graph>
         </div>
       </div>
-      <!--内存消耗-->
-      <div class="card col-md-12">
-        <div class="item">
-          <p class="item-title">内存使用率</p>
-          <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">
-            <div class="item-canvas" style="flex:1" ref="ramLine">加载中...</div>
+    </div>
+    <div v-else-if="mainType=='6'">
+      <div class="list-item row">
+        <at-badge :value="moName" style="margin-left: 10px"></at-badge>
+      </div>
+      <div class="list-item row">
+        <div class="card col-md-12" style="height: 500px">
+          <div class="item">
+            <p class="item-title">主机</p>
+            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
+                 v-if="dataStatus">
+              <at-table :columns="columnsNetWorkHost" :data="dataNetWorkHost" stripe style="width: 100%;margin-top: 10px;" height="420" v-if="dataNetWorkHost.length>9"></at-table>
+              <at-table :columns="columnsNetWorkHost" :data="dataNetWorkHost" stripe style="width: 100%;margin-top: 10px;" v-else></at-table>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
           </div>
-          <div class="item-empty" v-else><p>暂无数据</p></div>
+        </div>
+        <div class="card col-md-12" style="height: 500px">
+          <div class="item">
+            <p class="item-title">虚拟机</p>
+            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
+                 v-if="dataStatus">
+              <at-table :columns="columnsNetWorkVM" :data="dataNetWorkVM" stripe style="width: 100%;margin-top: 10px;" height="420" v-if="dataNetWorkVM.length>9"></at-table>
+              <at-table :columns="columnsNetWorkVM" :data="dataNetWorkVM" stripe style="width: 100%;margin-top: 10px;" v-else></at-table>
+            </div>
+            <div class="item-empty" v-else><p>暂无数据</p></div>
+          </div>
         </div>
       </div>
-      <!--本地磁盘使用率-->
-      <div class="card col-md-12">
-        <div class="item">
-          <p class="item-title">磁盘使用情况(KBps)</p>
-          <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">
-            <div class="item-canvas" style="flex:1" ref="storeLine">加载中...</div>
-          </div>
-          <div class="item-empty" v-else><p>暂无数据</p></div>
-        </div>
+    </div>
+    <!--图标使用情况-->
+    <div v-else>
+      <div class="list-item row">
+        <at-badge :value="moName" style="margin-left: 10px"></at-badge>
       </div>
-      <!--网络使用率-->
-      <div class="card col-md-12">
-        <div class="item">
-          <p class="item-title">网络使用情况(KBps)</p>
-          <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="historyData">
-            <div class="item-canvas" style="flex:1" ref="networkLine">加载中...</div>
-          </div>
-          <div class="item-empty" v-else><p>暂无数据</p></div>
+      <div class="list-item row">
+
+        <div class="card col-md-12">
+          <graph :name="graphNames.name1" refname="line1" :data-status="dataStatus"></graph>
+        </div>
+
+        <div class="card col-md-12">
+          <graph :name="graphNames.name2" refname="line2" :data-status="dataStatus"></graph>
+        </div>
+
+        <div class="card col-md-12">
+          <graph :name="graphNames.name3" refname="line3" :data-status="dataStatus"></graph>
+        </div>
+
+        <div class="card col-md-12">
+          <graph :name="graphNames.name4" refname="line4" :data-status="dataStatus"></graph>
         </div>
       </div>
     </div>
