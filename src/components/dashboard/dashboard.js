@@ -17,6 +17,30 @@ Vue.component('graph', {
 
 const loadMsg = '加载中...';
 const loadErrorMsg = [];
+const renderColor = (h, params) => {
+  return h('div', {
+    style: {
+      color: params.item.overallStatus
+    }
+  }, params.item.overallStatus);
+};
+const nameColumn = {
+  title: '名称',
+  key: 'name'
+};
+const overallStatusColumn = {
+  title: '健康状态',
+  key: 'overallStatus',
+  render: renderColor
+};
+const connectionStateColumn = {
+  title: '连接状态',
+  key: 'runtime.connectionState'
+};
+const powerStateColumn = {
+  title:'电源状态',
+  key:'runtime.powerState'
+};
 export default {
   name: 'dashboard',
   data() {
@@ -48,232 +72,81 @@ export default {
       DepletionGraph3: null,
       DepletionGraph4: null,
       columns1: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        },
-        {
-          title: '连接状态',
-          key: 'runtime.connectionState'
-        }, {
+        nameColumn,
+        overallStatusColumn,
+        connectionStateColumn, {
           title: '操作',
           render: (h, params) => {
-            return h('div', [
-              h('AtButton', {
-                props: {
-                  size: 'small',
-                  hollow: true
-                },
-                style: {
-                  marginRight: '8px'
-                },
-                on: {
-                  click: () => {
-                    this.on_selection_change(params.item.name, '3')
-                  }
-                }
-              }, '查看')
-            ])
+            return this.tableRender(h,params,'3');
           }
         }
       ],
       data1: [],
       columns2: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        }, {
+        nameColumn,
+        overallStatusColumn, {
           title: '操作',
           render: (h, params) => {
-            return h('div', [
-              h('AtButton', {
-                props: {
-                  size: 'small',
-                  hollow: true
-                },
-                style: {
-                  marginRight: '8px'
-                },
-                on: {
-                  click: () => {
-                    this.on_selection_change(params.item.name, '1')
-                  }
-                }
-              }, '查看')
-            ])
+            return this.tableRender(h,params,'1');
           }
         }
       ],
       data2: [],
       columns3: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        }, {
+        nameColumn,
+        overallStatusColumn, {
           title: '操作',
           render: (h, params) => {
-            return h('div', [
-              h('AtButton', {
-                props: {
-                  size: 'small',
-                  hollow: true
-                },
-                style: {
-                  marginRight: '8px'
-                },
-                on: {
-                  click: () => {
-                    this.on_selection_change(params.item.name, '2')
-                  }
-                }
-              }, '查看')
-            ])
+            return this.tableRender(h,params,'2');
           }
         }
       ],
       data3: [],
       columns4: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        }, {
-          title: '电源状态',
-          key: 'runtime.powerState'
-        }, {
+        nameColumn,
+        overallStatusColumn, powerStateColumn, {
           title: '操作',
           render: (h, params) => {
-            return h('div', [
-              h('AtButton', {
-                props: {
-                  size: 'small',
-                  hollow: true,
-                  disabled: params.item['runtime.powerState'] == 'poweredOff'
-                },
-                style: {
-                  marginRight: '8px'
-                },
-                on: {
-                  click: () => {
-                    this.on_selection_change(params.item.name, '4')
-                  }
-                }
-              }, '查看')
-            ])
+            return this.tableRender(h,params,'4',params.item['runtime.powerState'] == 'poweredOff');
           }
         }
       ],
       data4: [],
       columns5: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        },
+        nameColumn,
+        overallStatusColumn,
         {
           title: '是否可以访问',
           key: 'summary.accessible'
         }, {
           title: '操作',
           render: (h, params) => {
-            return h('div', [
-              h('AtButton', {
-                props: {
-                  size: 'small',
-                  hollow: true
-                },
-                style: {
-                  marginRight: '8px'
-                },
-                on: {
-                  click: () => {
-                    this.on_selection_change(params.item.name, '5')
-                  }
-                }
-              }, '查看')
-            ])
+            return this.tableRender(h,params,'5');
           }
         }
       ],
       data5: [],
       columns6: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        }, {
+        nameColumn,
+        overallStatusColumn, {
           title: '操作',
           render: (h, params) => {
-            return h('div', [
-              h('AtButton', {
-                props: {
-                  size: 'small',
-                  hollow: true
-                },
-                style: {
-                  marginRight: '8px'
-                },
-                on: {
-                  click: () => {
-                    this.on_selection_change(params.item.name, '6')
-                  }
-                }
-              }, '查看')
-            ])
+            return this.tableRender(h,params,'6');
           }
         }
       ],
       data6: [],
       dataNetWorkHost: [],
       columnsNetWorkHost: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        },
-        {
-          title: '连接状态',
-          key: 'runtime.connectionState'
-        }
+        nameColumn,
+        overallStatusColumn,
+        connectionStateColumn
       ],
       dataNetWorkVM: [],
       columnsNetWorkVM: [
-        {
-          title: '名称',
-          key: 'name'
-        },
-        {
-          title: '健康状态',
-          key: 'overallStatus'
-        },
-        {
-          title: '连接状态',
-          key: 'runtime.powerState'
-        }
+        nameColumn,
+        overallStatusColumn,
+        powerStateColumn
       ],
       data: {
         dataCenterList: loadMsg,
@@ -290,8 +163,27 @@ export default {
     }
   },
   methods: {
-    logout(){
-      localStorage.token='';
+    tableRender(h, params,type,disable=false){
+      return h('div', [
+        h('AtButton', {
+          props: {
+            size: 'small',
+            hollow: true,
+            disabled:disable
+          },
+          style: {
+            marginRight: '8px'
+          },
+          on: {
+            click: () => {
+              this.on_selection_change(params.item.name, type)
+            }
+          }
+        }, '查看')
+      ])
+    },
+    logout() {
+      localStorage.token = '';
       location.reload(true);
     },
     getLength(obj) {
@@ -359,58 +251,61 @@ export default {
     },
     on_selection_change(data, type) {
       // if (this.mainType != type || this.moName != data) {
-        this.moName = data;
-        this.mainType = type;
-        switch (type) {
-          case '1':
-            this.graphNames = {name1: '虚拟机打开电源次数', name2: '虚拟机关闭电源次数', name3: '虚拟机克隆次数', name4: '虚拟机创建次数'};
-            this.loadMonitorData(data, VMWareService.getDataCenterMonitorData, [false, false, false, false], [{
-              name: '虚拟机打开电源次数',
-              stack: 'numPoweron'
-            }, {name: '虚拟机关闭电源次数', stack: 'numPoweroff'}, {name: '虚拟机克隆次数', stack: 'numClone'}, {
-              name: '虚拟机创建次数',
-              stack: 'numCreate'
-            }]);
-            break;
-          case '2':
-            this.graphNames = {name1: 'cpu使用率', name2: 'cpu使用情况(MHZ)', name3: '内存使用率', name4: '内存已消耗情况(KB)'};
-            this.loadMonitorData(data, VMWareService.getClusterMonitorData, [true, false, true, false], [{
-              name: 'CPU使用率',
-              stack: 'cpu'
-            }, {name: 'cpu使用情况', stack: 'cpumhz'}, {name: '内存使用率', stack: 'mem'}, {name: '内存已消耗情况', stack: 'memkb'}]);
-            break;
-          case '3':
-            this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘使用情况(KBps)', name4: '网络使用情况(KBps)'};
-            this.loadMonitorData(data, VMWareService.getHostMonitorData, [true, true, false, false], [{
-              name: 'CPU使用率',
-              stack: 'cpu'
-            }, {name: '内存使用率', stack: 'memory'}, {name: '汇总的磁盘I/O速度', stack: 'store'}, {
-              name: '传输和接收总速度',
-              stack: 'network'
-            }]);
-            break;
-          case '4':
-            this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘最长滞后时间(毫秒)', name4: '网络使用情况(KBps)'};
-            this.loadMonitorData(data, VMWareService.getVMMonitorData, [true, true, false, false], [{
-              name: 'CPU使用率',
-              stack: 'cpu'
-            }, {name: '内存使用率', stack: 'memory'}, {name: '最长滞后时间', stack: 'store'}, {
-              name: '传输和接收总速度',
-              stack: 'network'
-            }]);
-            break;
-          case '5':
-            this.loadStoreMonitorData(data, [{name: '存储使用情况'}, {name: '已使用', stack: 'used'}, {
-              name: '已分配',
-              stack: 'provisioned'
-            }, {name: '总容量', stack: 'capacity'}]);
-            break;
-          case '6':
-            this.loadNetworkMonitorData(data);
-            break;
-          default:
-            break;
-        }
+      this.moName = data;
+      this.mainType = type;
+      switch (type) {
+        case '1':
+          this.graphNames = {name1: '虚拟机打开电源次数', name2: '虚拟机关闭电源次数', name3: '虚拟机克隆次数', name4: '虚拟机创建次数'};
+          this.loadMonitorData(data, VMWareService.getDataCenterMonitorData, [false, false, false, false], [{
+            name: '虚拟机打开电源次数',
+            stack: 'numPoweron'
+          }, {name: '虚拟机关闭电源次数', stack: 'numPoweroff'}, {name: '虚拟机克隆次数', stack: 'numClone'}, {
+            name: '虚拟机创建次数',
+            stack: 'numCreate'
+          }]);
+          break;
+        case '2':
+          this.graphNames = {name1: 'cpu使用率', name2: 'cpu使用情况(MHZ)', name3: '内存使用率', name4: '内存已消耗情况(MB)'};
+          this.loadMonitorData(data, VMWareService.getClusterMonitorData, [true, false, true, false], [{
+            name: 'CPU使用率',
+            stack: 'cpu'
+          }, {name: 'cpu使用情况', stack: 'cpumhz'}, {name: '内存使用率', stack: 'mem'}, {
+            name: '内存已消耗情况',
+            stack: 'memkb'
+          }], [0, 0, 0, 1]);
+          break;
+        case '3':
+          this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘使用情况(KBps)', name4: '网络使用情况(KBps)'};
+          this.loadMonitorData(data, VMWareService.getHostMonitorData, [true, true, false, false], [{
+            name: 'CPU使用率',
+            stack: 'cpu'
+          }, {name: '内存使用率', stack: 'memory'}, {name: '汇总的磁盘I/O速度', stack: 'store'}, {
+            name: '传输和接收总速度',
+            stack: 'network'
+          }]);
+          break;
+        case '4':
+          this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘最长滞后时间(毫秒)', name4: '网络使用情况(KBps)'};
+          this.loadMonitorData(data, VMWareService.getVMMonitorData, [true, true, false, false], [{
+            name: 'CPU使用率',
+            stack: 'cpu'
+          }, {name: '内存使用率', stack: 'memory'}, {name: '最长滞后时间', stack: 'store'}, {
+            name: '传输和接收总速度',
+            stack: 'network'
+          }]);
+          break;
+        case '5':
+          this.loadStoreMonitorData(data, [{name: '存储使用情况'}, {name: '已使用', stack: 'used'}, {
+            name: '已分配',
+            stack: 'provisioned'
+          }, {name: '总容量', stack: 'capacity'}]);
+          break;
+        case '6':
+          this.loadNetworkMonitorData(data);
+          break;
+        default:
+          break;
+      }
       // }
     },
     gotoVMWare() {
@@ -450,7 +345,11 @@ export default {
             if (type != 0) {
               let array = [];
               _.each(data.longs[i].list, item => {
-                array.push(this.round(this.bytesToSize(item, type)));
+                if (item) {
+                  array.push(this.round(this.bytesToSize(item, type)));
+                } else {
+                  array.push(item);
+                }
               });
               returnData.yData = array;
             } else {
@@ -508,7 +407,7 @@ export default {
         }
       });
     },
-    loadMonitorData(val, fun, isPercentage, series) {
+    loadMonitorData(val, fun, isPercentage, series, lineDataFomater = [0, 0, 0, 0]) {
       if (document.getElementById('line1')) {
         document.getElementById('line1').innerHTML = loadMsg;
       }
@@ -524,10 +423,10 @@ export default {
       fun(val).then((res) => {
         if (res.data.success) {
           this.dataStatus = true;
-          this.DepletionGraph1 = CanvasService.DepletionGraph(document.getElementById('line1'), this.getLineData(res.data.result.data1), isPercentage[0], series[0]);
-          this.DepletionGraph2 = CanvasService.DepletionGraph(document.getElementById('line2'), this.getLineData(res.data.result.data2), isPercentage[1], series[1]);
-          this.DepletionGraph3 = CanvasService.DepletionGraph(document.getElementById('line3'), this.getLineData(res.data.result.data3), isPercentage[2], series[2]);
-          this.DepletionGraph4 = CanvasService.DepletionGraph(document.getElementById('line4'), this.getLineData(res.data.result.data4), isPercentage[3], series[3]);
+          this.DepletionGraph1 = CanvasService.DepletionGraph(document.getElementById('line1'), this.getLineData(res.data.result.data1, lineDataFomater[0]), isPercentage[0], series[0]);
+          this.DepletionGraph2 = CanvasService.DepletionGraph(document.getElementById('line2'), this.getLineData(res.data.result.data2, lineDataFomater[1]), isPercentage[1], series[1]);
+          this.DepletionGraph3 = CanvasService.DepletionGraph(document.getElementById('line3'), this.getLineData(res.data.result.data3, lineDataFomater[2]), isPercentage[2], series[2]);
+          this.DepletionGraph4 = CanvasService.DepletionGraph(document.getElementById('line4'), this.getLineData(res.data.result.data4, lineDataFomater[3]), isPercentage[3], series[3]);
         } else {
           this.dataStatus = false;
         }
@@ -562,15 +461,28 @@ export default {
     });
   },
   computed: {
-    mainTypeName:function () {
-      switch (this.mainType){
-        case '1':return '数据中心:'+this.moName;break;
-        case '2':return '集群:'+this.moName;break;
-        case '3':return '主机:'+this.moName;break;
-        case '4':return '虚拟机:'+this.moName;break;
-        case '5':return '存储:'+this.moName;break;
-        case '6':return '网络:'+this.moName;break;
-        default:break;
+    mainTypeName: function () {
+      switch (this.mainType) {
+        case '1':
+          return '数据中心:' + this.moName;
+          break;
+        case '2':
+          return '集群:' + this.moName;
+          break;
+        case '3':
+          return '主机:' + this.moName;
+          break;
+        case '4':
+          return '虚拟机:' + this.moName;
+          break;
+        case '5':
+          return '存储:' + this.moName;
+          break;
+        case '6':
+          return '网络:' + this.moName;
+          break;
+        default:
+          break;
       }
     },
     cpuPercent: function () {
