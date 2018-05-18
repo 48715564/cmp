@@ -290,6 +290,10 @@ export default {
     }
   },
   methods: {
+    logout(){
+      localStorage.token='';
+      location.reload(true);
+    },
     getLength(obj) {
       if (obj instanceof Object) {
         return obj.length;
@@ -354,7 +358,7 @@ export default {
       }
     },
     on_selection_change(data, type) {
-      if (this.mainType != type || this.moName != data) {
+      // if (this.mainType != type || this.moName != data) {
         this.moName = data;
         this.mainType = type;
         switch (type) {
@@ -407,7 +411,7 @@ export default {
           default:
             break;
         }
-      }
+      // }
     },
     gotoVMWare() {
       window.open('https://10.0.7.45/');
@@ -558,6 +562,17 @@ export default {
     });
   },
   computed: {
+    mainTypeName:function () {
+      switch (this.mainType){
+        case '1':return '数据中心:'+this.moName;break;
+        case '2':return '集群:'+this.moName;break;
+        case '3':return '主机:'+this.moName;break;
+        case '4':return '虚拟机:'+this.moName;break;
+        case '5':return '存储:'+this.moName;break;
+        case '6':return '网络:'+this.moName;break;
+        default:break;
+      }
+    },
     cpuPercent: function () {
       if (this.cpuAndMenInfo.usedCpuMhz && this.cpuAndMenInfo.cpuMhz) {
         return _.round(this.cpuAndMenInfo.usedCpuMhz * 100 / this.cpuAndMenInfo.cpuMhz, 2);

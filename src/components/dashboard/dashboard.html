@@ -11,8 +11,8 @@
           <p class="hd-user-role">超级管理员</p>
           <img src="../../assets/images/timg.jpg" class="hd-user-pic"></img>
         </div>
-        <div class="hd-status-alarm">
-          <i class="icon icon-bell"></i>
+        <div class="hd-status-alarm" @click="logout">
+          退出
         </div>
       </div>
     </div>
@@ -268,7 +268,7 @@
     </div>
     <div v-else-if="mainType=='5'">
       <div class="list-item row">
-        <at-badge :value="moName" style="margin-left: 10px"></at-badge>
+        <at-badge :value="mainTypeName" style="margin-left: 10px"></at-badge>
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
@@ -287,7 +287,7 @@
     </div>
     <div v-else-if="mainType=='6'">
       <div class="list-item row">
-        <at-badge :value="moName" style="margin-left: 10px"></at-badge>
+        <at-badge :value="mainTypeName" style="margin-left: 10px"></at-badge>
       </div>
       <div class="list-item row">
         <div class="card col-md-12" style="height: 500px">
@@ -317,7 +317,7 @@
     <!--图标使用情况-->
     <div v-else>
       <div class="list-item row">
-        <at-badge :value="moName" style="margin-left: 10px"></at-badge>
+        <at-badge :value="mainTypeName" style="margin-left: 10px"></at-badge>
       </div>
       <div class="list-item row">
 
