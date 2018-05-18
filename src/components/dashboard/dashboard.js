@@ -25,8 +25,9 @@ export default {
     gotoOpenStack() {
       window.open("http://10.0.2.5");
     },
-    kubernetesShow() {
-      this.$Modal.alert('Kubernetes 暂未开放！');
+    logout() {
+      localStorage.token='';
+      location.reload(true);
     },
     //拆分时间
     getChartXLineData(data) {

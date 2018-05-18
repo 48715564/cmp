@@ -5,8 +5,8 @@
     </div>
     <div class="login-content">
       <div class="login-input-groups">
-        <at-input v-model="username" id="user" placeholder="用户名" @keyup.enter="login" autofocus></at-input>
-        <at-input v-model="password" id="pwd" type="password" placeholder="密码" @keyup.enter="login"></at-input>
+        <at-input v-model="username" id="user" placeholder="用户名" @keyup.enter.native="login" autofocus></at-input>
+        <at-input v-model="password" id="pwd" type="password" placeholder="密码" @keyup.enter.native="login"></at-input>
         <div class="login-btn" @click="login"><i class="icon icon-arrow-right"></i></div>
       </div>
     </div>
