@@ -309,7 +309,7 @@ export default {
       // }
     },
     gotoVMWare() {
-      window.open('https://10.0.7.45/');
+      window.open('https://10.0.7.45/ui');
     },
     getHostName(hostList) {
       if (hostList && hostList.length > 0) {
