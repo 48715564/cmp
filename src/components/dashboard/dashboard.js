@@ -2,15 +2,17 @@ import CanvasService from '@/services/CanvasService.js';
 import OpenStackService from '@/services/OpenStackService.js';
 import Xclarity from '@/components/xclarity/xclarity.vue';
 import Vue from 'vue';
+import _ from 'lodash';
 
 Vue.component('top-dashboard', {
-  props: ['name', 'iconClass', 'columns','on_selection_change','data','isShowHight','count'],
+  props: ['name', 'iconClass', 'columns', 'on_selection_change', 'data', 'isShowHight', 'count'],
   template: '<div class="item">\n' +
   '          <div :class="iconClass" style="font-size: 2rem"></div>\n' +
   '          <div class="item-right">\n' +
   '            <div style="text-align: center">\n' +
   '              <at-popover trigger="click" placement="bottom">\n' +
-  '                <a href="javascript:void(0)">{{count}}</a>\n' +
+  '                <a href="javascript:void(0)" v-if="count>0">{{count}}</a>\n' +
+  '                <span v-else>{{count}}</span>' +
   '                <template slot="content">\n' +
   '                  <at-table :columns="columns" :on-selection-change="on_selection_change" :data="data"\n' +
   '                            v-if="isShowHight" height="350"></at-table>\n' +
@@ -24,13 +26,25 @@ Vue.component('top-dashboard', {
   '        </div>',
 });
 
+
+Vue.component('graph', {
+  props: ['name', 'refname', 'dataStatus'],
+  template: '<div class="item">\n' +
+  '            <p class="item-title">{{name}}</p>\n' +
+  '            <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">\n' +
+  '              <div class="item-canvas" style="flex:1" :id="refname">加载中...</div>\n' +
+  '            </div>\n' +
+  '            <div class="item-empty" v-else><p>暂无数据</p></div>\n' +
+  '          </div>'
+});
+
 const loadMsg = '加载中...';
 const loadErrorMsg = '服务端异常';
 const netStatus = {
-  ACTIVE:'激活',
-  DOWN:'停止',
-  BUILD:'构建',
-  ERROR:'错误'
+  ACTIVE: '激活',
+  DOWN: '停止',
+  BUILD: '构建',
+  ERROR: '错误'
 };
 const vmStatus = {
   ACTIVE: '活动状态',
@@ -53,7 +67,27 @@ const vmStatus = {
   SUSPENDED: '服务器被挂起，无论是通过请求还是必要的。',
   UNKNOWN: '服务器的状态是未知的。联系您的云提供商。',
   VERIFY_RESIZE: '系统正在等待移动或调整大小后确认服务器正在运行。',
+};
+
+const getVmPowerState = (state)=>{
+  switch (state){
+    case "0":return '无状态';break;
+    case "1":return '运行中';break;
+    case "3":return '暂停';break;
+    case "4":return '关闭';break;
+    case "6":return '坠毁';break;
+    case "7":return '悬浮';break;
+    default : break;
+  }
 }
+
+const propertiesColumn = [{
+  title: '属性名称',
+  key: 'name'
+},{
+  title: '属性值',
+  key: 'value'
+},];
 const nameColumn = {
   title: '名称',
   key: 'name'
@@ -62,7 +96,35 @@ export default {
   name: 'dashboard',
   data() {
     return {
+      mainType: 0,
+      moName: '',
+      graphNames: {
+        name1: '',
+        name2: '',
+        name3: '',
+        name4: ''
+      },
       tableInfo: {
+        infoTable:{
+          columns:propertiesColumn,
+          data:[],
+        },
+        vmBaseTable:{
+          columns:propertiesColumn,
+          data:[],
+        },
+        vmSpecTable:{
+          columns:propertiesColumn,
+          data:[],
+        },
+        vmIPTable:{
+          columns:propertiesColumn,
+          data:[],
+        },
+        vmImagesTable:{
+          columns:propertiesColumn,
+          data:[],
+        },
         hostTable: {
           columns: [
             {
@@ -80,7 +142,7 @@ export default {
             {
               title: '操作',
               render: (h, params) => {
-                return this.tableRender(h, params, '5', false, 'id');
+                return this.tableRender(h, params, '1', false, 'id','hypervisor_hostname');
               }
             }
           ],
@@ -92,13 +154,13 @@ export default {
               title: '状态',
               key: 'status',
               render: (h, params) => {
-                return h('div', {},vmStatus[params.item.status.toUpperCase()])
+                return h('div', {}, vmStatus[params.item.status.toUpperCase()])
               }
             },
             {
               title: '操作',
               render: (h, params) => {
-                return this.tableRender(h, params, '5', false, 'id');
+                return this.tableRender(h, params, '2', false, 'id','name');
               }
             }
           ],
@@ -113,7 +175,7 @@ export default {
               title: '状态',
               key: 'status',
               render: (h, params) => {
-                return h('div', {},netStatus[params.item.status.toUpperCase()])
+                return h('div', {}, netStatus[params.item.status.toUpperCase()])
               }
             },
             {
@@ -140,11 +202,55 @@ export default {
     }
   },
   methods: {
-    on_selection_change(data, type) {
-
+    on_selection_change(id,name, type) {
+      this.mainType=type;
+      this.moName = name;
+      switch (type) {
+        case '1':
+          this.graphNames = {name1: '主机信息', name2: 'cpu使用情况', name3: '内存使用情况', name4: '本地磁盘使用情况'};
+          this.loadMonitorData(id, OpenStackService.openStackHostById, [{
+            name: 'cpu使用情况'
+          }, {name: '内存使用情况'}, {name: '本地磁盘使用情况'}],["bar1","bar2","bar3"],this.hostCallbackFun);
+          break;
+        case '2':
+          this.graphNames = {name1: '基本信息', name2: '规格信息', name3: 'IP信息', name4: '镜像信息'};
+          this.loadMonitorData(id, OpenStackService.openStackVMById,null,null,this.vmCallbackFun);
+          break;
+        case '3':
+          this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘使用情况(KBps)', name4: '网络使用情况(KBps)'};
+          this.loadMonitorData(data, VMWareService.getHostMonitorData, [true, true, false, false], [{
+            name: 'CPU使用率',
+            stack: 'cpu'
+          }, {name: '内存使用率', stack: 'memory'}, {name: '汇总的磁盘I/O速度', stack: 'store'}, {
+            name: '传输和接收总速度',
+            stack: 'network'
+          }]);
+          break;
+        case '4':
+          this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘最长滞后时间(毫秒)', name4: '网络使用情况(KBps)'};
+          this.loadMonitorData(data, VMWareService.getVMMonitorData, [true, true, false, false], [{
+            name: 'CPU使用率',
+            stack: 'cpu'
+          }, {name: '内存使用率', stack: 'memory'}, {name: '最长滞后时间', stack: 'store'}, {
+            name: '传输和接收总速度',
+            stack: 'network'
+          }]);
+          break;
+        case '5':
+          this.loadStoreMonitorData(data, [{name: '存储使用情况'}, {name: '已使用', stack: 'used'}, {
+            name: '已分配',
+            stack: 'provisioned'
+          }, {name: '总容量', stack: 'capacity'}]);
+          break;
+        case '6':
+          this.loadNetworkMonitorData(data);
+          break;
+        default:
+          break;
+      }
     },
 
-    tableRender(h, params, type, disable = false, propetiesName) {
+    tableRender(h, params, type, disable = false, propetiesID, propetiesName) {
       return h('div', [
         h('AtButton', {
           props: {
@@ -157,14 +263,14 @@ export default {
           },
           on: {
             click: () => {
-              this.on_selection_change(params.item[propetiesName], type)
+              this.on_selection_change(params.item[propetiesID],params.item[propetiesName], type)
             }
           }
         }, '查看')
       ])
     },
-    isShowHight: function (size) {
-      if (size > 7) {
+    isShowHight: function (size,length=7) {
+      if (size > length) {
         return true
       } else {
         return false;
@@ -279,7 +385,86 @@ export default {
         netCountArray: netCountArray
       }
     },
-    server() {
+    changeDataFun(data){
+      if(data.type=='host'){
+        let infoArray=[];
+        infoArray.push({'name':'主机名','value':data.item.hypervisor_hostname});
+        infoArray.push({'name':'主机类型','value':data.item.hypervisor_type});
+        infoArray.push({'name':'虚拟机个数','value':data.item.running_vms});
+        infoArray.push({'name':'启用状态','value':data.item.status});
+        infoArray.push({'name':'开关状态','value':data.item.state});
+        infoArray.push({'name':'主机IP','value':data.item.host_ip});
+        let barData=[];
+        let barData1=[];
+        barData1.push({'name':'可用','value':(data.item.vcpus-data.item.vcpus_used)});
+        barData1.push({'name':'已用','value':data.item.vcpus_used});
+        barData.push(barData1);
+        let barData2=[];
+        barData2.push({'name':'可用','value':(data.item.memory_mb-data.item.memory_mb_used)});
+        barData2.push({'name':'已用','value':data.item.memory_mb_used});
+        barData.push(barData2);
+        let barData3=[];
+        barData3.push({'name':'可用','value':(data.item.local_gb-data.item.local_gb_used)});
+        barData3.push({'name':'已用','value':data.item.local_gb_used});
+        barData.push(barData3);
+        return {infoArray:infoArray,barData:barData};
+      }else if(data.type=='vm'){
+        let vmBaseArray=[];
+        vmBaseArray.push({'name':'虚拟机名','value':data.item.name});
+        vmBaseArray.push({'name':'ID','value':data.item.id});
+        vmBaseArray.push({'name':'电源状态','value':getVmPowerState(data.item['OS-EXT-STS:power_state'])});
+        vmBaseArray.push({'name':'可用域','value':data.item['OS-EXT-AZ:availability_zone']});
+        vmBaseArray.push({'name':'创建时间','value':data.item.created});
+        vmBaseArray.push({'name':'主机','value':data.item['OS-EXT-SRV-ATTR:host']});
+        let vmSpecArray=[];
+        vmSpecArray.push({'name':'实例类型名称','value':data.item.flavor.name});
+        vmSpecArray.push({'name':'实例类型ID','value':data.item.flavor.id});
+        vmSpecArray.push({'name':'内存(MB)','value':data.item.flavor.ram});
+        vmSpecArray.push({'name':'VCPU数量','value':data.item.flavor.vcpus});
+        vmSpecArray.push({'name':'磁盘(GB)','value':data.item.flavor.disk});
+        let vmIPArray=[];
+        for(var p in data.item.addresses.addresses){
+          vmIPArray.push({'name':p,'value':_.join(_.map(data.item.addresses.addresses[p],'addr'),',<br/>')});
+        }
+        let vmImagesArray = [];
+        vmImagesArray.push({'name':'镜像名称','value':data.item.image.name});
+        vmImagesArray.push({'name':'镜像ID','value':data.item.image.id});
+        vmImagesArray.push({'name':'最小内存(MB)','value':data.item.image.minRam});
+        vmImagesArray.push({'name':'最小磁盘(GB)','value':data.item.image.minDisk});
+        return {vmBaseArray:vmBaseArray,vmSpecArray:vmSpecArray,vmIPArray:vmIPArray,vmImagesArray:vmImagesArray};
+      }
+    },
+    hostCallbackFun(result,divIds,series){
+      let count = 0;
+      let changeData = this.changeDataFun(result);
+      this.tableInfo.infoTable.data = changeData.infoArray;
+      _.each(divIds,item=>{
+        CanvasService.DepletionGraphBar(document.getElementById(item), changeData.barData[count],series[count]);
+        count++;
+      });
+    },
+    vmCallbackFun(result){
+      let count = 0;
+      let changeData = this.changeDataFun(result);
+      this.tableInfo.vmBaseTable.data=changeData.vmBaseArray;
+      this.tableInfo.vmSpecTable.data=changeData.vmSpecArray;
+      this.tableInfo.vmIPTable.data=changeData.vmIPArray;
+      this.tableInfo.vmImagesTable.data=changeData.vmImagesArray;
+    },
+    loadMonitorData(val, fun, series,divIds,callbackFun) {
+      _.each(divIds,item=>{
+        if(document.getElementById(item)){
+          document.getElementById(item).innerHTML = loadMsg;
+        }
+      })
+      fun(val).then((res) => {
+        if (res.data.success) {
+          this.dataStatus = true;
+          callbackFun(res.data.result,divIds,series);
+        } else {
+          this.dataStatus = false;
+        }
+      });
     },
   },
   mounted() {
@@ -331,6 +516,32 @@ export default {
         this.tableInfo.netTable.data = val.netList;
       }
     }
+  },
+  computed:{
+    mainTypeName: function () {
+      switch (this.mainType) {
+        case '1':
+          return '主机:' + this.moName;
+          break;
+        case '2':
+          return '虚拟机:' + this.moName;
+          break;
+        case '3':
+          return '主机:' + this.moName;
+          break;
+        case '4':
+          return '虚拟机:' + this.moName;
+          break;
+        case '5':
+          return '存储:' + this.moName;
+          break;
+        case '6':
+          return '网络:' + this.moName;
+          break;
+        default:
+          break;
+      }
+    },
   },
   components: {Xclarity},
 };

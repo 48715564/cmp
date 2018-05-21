@@ -5,6 +5,8 @@ module.exports = {
     userLogin: `${API}/auth`,
     openStackInfo: `${API}/OpenStack/info`,
     openStackInfoPage: `${API}/OpenStack/infoPage`,
+    openStackHostById:`${API}/OpenStack/getHostById`,
+    openStackVMById:`${API}/OpenStack/getVMById`,
     xClarity_hardwareList: `${API}/XClarity/hardwareList`,
     xClarity_configPatterns:`${API}/XClarity/configPatterns`,
     xClarity_systemImages:`${API}/XClarity/systemImages`,

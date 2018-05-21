@@ -385,6 +385,37 @@ const drawStoreDepletionGraph = (el,data) => {
   });
   return Chart;
 };
+
+const DepletionGraphBar = (el, data,series) => {
+  if (data) {
+    Echarts.dispose(el);
+    const Chart = Echarts.init(el);
+    Chart.setOption({
+      tooltip: {
+        trigger: 'item'
+      },
+      series: [
+        {
+          name: series.name,
+          type: 'pie',
+          data: data,
+          itemStyle: {
+            emphasis: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }
+      ]
+    });
+    return Chart;
+  }else{
+    el.innerHTML='暂无数据';
+  }
+};
+
+
 export default {
   drawCPUDepletionGraphBar,
   drawMemoryDepletionGraphBar,
@@ -393,4 +424,5 @@ export default {
   drawCPUDepletionGraph,
   drawMemoryDepletionGraph,
   drawStoreDepletionGraph,
+  DepletionGraphBar,
 };
