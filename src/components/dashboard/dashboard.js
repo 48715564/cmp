@@ -69,6 +69,10 @@ const vmStatus = {
   VERIFY_RESIZE: '系统正在等待移动或调整大小后确认服务器正在运行。',
 };
 
+const toLocaleString = function getDate(date){
+  return new Date(date).toLocaleString();
+};
+
 const getVmPowerState = (state)=>{
   switch (state){
     case "0":return '无状态';break;
@@ -414,7 +418,7 @@ export default {
         vmBaseArray.push({'name':'ID','value':data.item.id});
         vmBaseArray.push({'name':'电源状态','value':getVmPowerState(data.item['OS-EXT-STS:power_state'])});
         vmBaseArray.push({'name':'可用域','value':data.item['OS-EXT-AZ:availability_zone']});
-        vmBaseArray.push({'name':'创建时间','value':data.item.created});
+        vmBaseArray.push({'name':'创建时间','value':toLocaleString(data.item.created)});
         vmBaseArray.push({'name':'主机','value':data.item['OS-EXT-SRV-ATTR:host']});
         let vmSpecArray=[];
         vmSpecArray.push({'name':'实例类型名称','value':data.item.flavor.name});
