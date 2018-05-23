@@ -1,7 +1,7 @@
 <div class="main">
   <header class="header">
     <div class="nav-container">
-      <div class="nav-left">
+      <div class="nav-left" @click="this.reloadPage">
         <div class="logo">
           <img src="../../assets/images/svg/logo-hybrid-cloud.svg">
         </div>
@@ -19,56 +19,40 @@
   </header>
   <section class="container">
     <!--总览-->
-    <div class="list-item row">
+    <div class="list-item row" style="display: flex;justify-content:space-between">
       <!--主机-->
-      <div class="top-card col-md-4">
+      <div class="top-card" style="width: 20%">
         <top-dashboard name="主机" iconClass="icon icon-server" :columns="tableInfo.hostTable.columns"
                        :on_selection_change="on_selection_change"
                        :data="tableInfo.hostTable.data" :isShowHight="isShowHight(data.hypervisorCount)"
                        :count="data.hypervisorCount"></top-dashboard>
       </div>
       <!--虚拟机-->
-      <div class="top-card col-md-4">
+      <div class="top-card" style="width: 20%">
         <top-dashboard name="虚拟机" iconClass="icon myicon-xuniji" :columns="tableInfo.vmTable.columns"
                        :on_selection_change="on_selection_change"
                        :data="tableInfo.vmTable.data" :isShowHight="isShowHight(data.runningVmCount)"
                        :count="data.runningVmCount"></top-dashboard>
       </div>
-      <!--cpu-->
-      <div class="top-card col-md-4">
-        <div class="item">
-          <div class="icon icon-cpu" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center">{{data.virtualCpu}}</div>
-            <div class="small-text">CPU</div>
-          </div>
-        </div>
+      <!--镜像-->
+      <div class="top-card" style="width: 20%">
+        <top-dashboard name="镜像" iconClass="icon icon-cpu" :columns="tableInfo.imagesTable.columns"
+                       :on_selection_change="on_selection_change"
+                       :data="tableInfo.imagesTable.data" :isShowHight="isShowHight(data.imagesCount)"
+                       :count="data.imagesCount"></top-dashboard>
       </div>
 
-      <!--内存-->
-      <div class="top-card col-md-4">
-        <div class="item">
-          <div class="icon myicon-neicun" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center">{{data.memory}}</div>
-            <div class="small-text">内存(MB)</div>
-          </div>
-        </div>
+      <!--实例类型-->
+      <div class="top-card" style="width: 20%">
+        <top-dashboard name="实例类型" iconClass="icon myicon-neicun" :columns="tableInfo.flavorsTable.columns"
+                       :on_selection_change="on_selection_change"
+                       :data="tableInfo.flavorsTable.data" :isShowHight="isShowHight(data.flavorsCount)"
+                       :count="data.flavorsCount"></top-dashboard>
       </div>
 
-      <!--磁盘-->
-      <div class="top-card col-md-4">
-        <div class="item">
-          <div class="icon myicon-cipan" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center">{{data.local}}</div>
-            <div class="small-text">磁盘(GB)</div>
-          </div>
-        </div>
-      </div>
 
       <!--网络-->
-      <div class="top-card col-md-4">
+      <div class="top-card" style="width: 20%">
         <top-dashboard name="网络个数" iconClass="icon myicon-wangluo" :columns="tableInfo.netTable.columns"
                        :on_selection_change="on_selection_change"
                        :data="tableInfo.netTable.data" :isShowHight="isShowHight(data.networkCount)"
@@ -81,11 +65,11 @@
         <!--CPU 使用率-->
         <div class="card col-md-12">
           <div class="item">
-            <p class="item-title">CPU使用</p>
+            <p class="item-title">VCPU使用</p>
             <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
                  v-if="dataStatus">
-              <div class="item-canvas" style="flex:3;" ref="cpu">加载中...</div>
-              <div class="item-canvas" style="flex:5" ref="cpuLine">加载中...</div>
+              <div class="item-canvas" style="flex:3;" id="cpu" key="main0">加载中...</div>
+              <div class="item-canvas" style="flex:5" id="cpuLine" key="main1">加载中...</div>
             </div>
             <div class="item-empty" v-else><p>暂无数据</p></div>
           </div>
@@ -95,8 +79,8 @@
           <div class="item">
             <p class="item-title">内存使用(MB)</p>
             <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">
-              <div class="item-canvas" style="flex:3" ref="ram">加载中...</div>
-              <div class="item-canvas" style="flex:5" ref="ramLine">加载中...</div>
+              <div class="item-canvas" style="flex:3" id="ram" key="main2">加载中...</div>
+              <div class="item-canvas" style="flex:5" id="ramLine" key="main3">加载中...</div>
             </div>
             <div class="item-empty" v-else><p>暂无数据</p></div>
           </div>
@@ -106,8 +90,8 @@
           <div class="item">
             <p class="item-title">本地磁盘使用(GB)</p>
             <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">
-              <div class="item-canvas" style="flex:3" ref="store">加载中...</div>
-              <div class="item-canvas" style="flex:5" ref="storeLine">加载中...</div>
+              <div class="item-canvas" style="flex:3" id="store" key="main4">加载中...</div>
+              <div class="item-canvas" style="flex:5" id="storeLine" key="main5">加载中...</div>
             </div>
             <div class="item-empty" v-else><p>暂无数据</p></div>
           </div>
@@ -117,7 +101,7 @@
           <div class="item">
             <p class="item-title">网络个数</p>
             <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">
-              <div class="item-canvas" style="flex:1" ref="network">加载中...</div>
+              <div class="item-canvas" style="flex:1" id="network" key="main6">加载中...</div>
             </div>
             <div class="item-empty" v-else><p>暂无数据</p></div>
           </div>
@@ -130,15 +114,7 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
-          <div class="item">
-            <p class="item-title">{{graphNames.name1}}</p>
-            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
-                 v-if="dataStatus">
-              <at-table :columns="tableInfo.infoTable.columns" :data="tableInfo.infoTable.data" stripe style="width: 100%;margin-top: 10px;" v-if="this.isShowHight(tableInfo.infoTable.data.length,4)" height="200" border></at-table>
-              <at-table :columns="tableInfo.infoTable.columns" :data="tableInfo.infoTable.data" stripe style="width: 100%;margin-top: 10px;" v-else border></at-table>
-            </div>
-            <div class="item-empty" v-else><p>暂无数据</p></div>
-          </div>
+          <table-card keyValue="key1" height="350" :name="graphNames.name1" :columns="tableInfo.infoTable.columns" :data="tableInfo.infoTable.data" :isShowHight="this.isShowHight(tableInfo.infoTable.data.length,4)" :data-status="dataStatus"></table-card>
         </div>
       <div class="card col-md-12">
         <graph :name="graphNames.name2" refname="bar1" :data-status="dataStatus"></graph>
@@ -157,48 +133,70 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
-          <div class="item">
-            <p class="item-title">{{graphNames.name1}}</p>
-            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
-                 v-if="dataStatus">
-              <at-table :columns="tableInfo.vmBaseTable.columns" :data="tableInfo.vmBaseTable.data" stripe style="width: 100%;margin-top: 10px;" v-if="this.isShowHight(tableInfo.vmBaseTable.data.length,4)" height="200" border></at-table>
-              <at-table :columns="tableInfo.vmBaseTable.columns" :data="tableInfo.vmBaseTable.data" stripe style="width: 100%;margin-top: 10px;" v-else border></at-table>
-            </div>
-            <div class="item-empty" v-else><p>暂无数据</p></div>
-          </div>
+          <table-card keyValue="key2" height="350" :name="graphNames.name1" :columns="tableInfo.vmBaseTable.columns" :data="tableInfo.vmBaseTable.data" :isShowHight="this.isShowHight(tableInfo.vmBaseTable.data.length,4)" :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <div class="item">
-            <p class="item-title">{{graphNames.name2}}</p>
-            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
-                 v-if="dataStatus">
-              <at-table :columns="tableInfo.vmSpecTable.columns" :data="tableInfo.vmSpecTable.data" stripe style="width: 100%;margin-top: 10px;" v-if="this.isShowHight(tableInfo.vmSpecTable.data.length,4)" height="200" border></at-table>
-              <at-table :columns="tableInfo.vmSpecTable.columns" :data="tableInfo.vmSpecTable.data" stripe style="width: 100%;margin-top: 10px;" v-else border></at-table>
-            </div>
-            <div class="item-empty" v-else><p>暂无数据</p></div>
-          </div>
+          <table-card keyValue="key3" height="350" :name="graphNames.name2" :columns="tableInfo.vmSpecTable.columns" :data="tableInfo.vmSpecTable.data" :isShowHight="this.isShowHight(tableInfo.vmSpecTable.data.length,4)" :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <div class="item">
-            <p class="item-title">{{graphNames.name3}}</p>
-            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
-                 v-if="dataStatus">
-              <at-table :columns="tableInfo.vmIPTable.columns" :data="tableInfo.vmIPTable.data" stripe style="width: 100%;margin-top: 10px;" v-if="this.isShowHight(tableInfo.vmIPTable.data.length,4)" height="200" border></at-table>
-              <at-table :columns="tableInfo.vmIPTable.columns" :data="tableInfo.vmIPTable.data" stripe style="width: 100%;margin-top: 10px;" v-else border></at-table>
-            </div>
-            <div class="item-empty" v-else><p>暂无数据</p></div>
-          </div>
+          <table-card keyValue="key4" height="350" :name="graphNames.name3" :columns="tableInfo.vmIPTable.columns" :data="tableInfo.vmIPTable.data" :isShowHight="this.isShowHight(tableInfo.vmIPTable.data.length,4)" :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <div class="item">
-            <p class="item-title">{{graphNames.name4}}</p>
-            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"
-                 v-if="dataStatus">
-              <at-table :columns="tableInfo.vmImagesTable.columns" :data="tableInfo.vmImagesTable.data" stripe style="width: 100%;margin-top: 10px;" v-if="this.isShowHight(tableInfo.vmImagesTable.data.length,4)" height="200" border></at-table>
-              <at-table :columns="tableInfo.vmImagesTable.columns" :data="tableInfo.vmImagesTable.data" stripe style="width: 100%;margin-top: 10px;" v-else border></at-table>
-            </div>
-            <div class="item-empty" v-else><p>暂无数据</p></div>
-          </div>
+          <table-card keyValue="key5" height="350" :name="graphNames.name4" :columns="tableInfo.vmImagesTable.columns" :data="tableInfo.vmImagesTable.data" :isShowHight="this.isShowHight(tableInfo.vmImagesTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="mainType=='3'">
+      <div class="list-item row">
+        <at-badge :value="mainTypeName" style="margin-left: 10px"></at-badge>
+      </div>
+      <div class="list-item row">
+        <div class="card col-md-12">
+          <table-card keyValue="key2" height="350" :name="graphNames.name1" :columns="tableInfo.imagesBaseTable.columns" :data="tableInfo.imagesBaseTable.data" :isShowHight="this.isShowHight(tableInfo.imagesBaseTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12">
+          <table-card keyValue="key3" height="350" :name="graphNames.name2" :columns="tableInfo.imagesSpecTable.columns" :data="tableInfo.imagesSpecTable.data" :isShowHight="this.isShowHight(tableInfo.imagesSpecTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12">
+          <table-card keyValue="key4" height="350" :name="graphNames.name3" :columns="tableInfo.imagesCAttrTable.columns" :data="tableInfo.imagesCAttrTable.data" :isShowHight="this.isShowHight(tableInfo.imagesCAttrTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12">
+          <table-card keyValue="key5" height="350" :name="graphNames.name4" :columns="tableInfo.imagesSecurityTable.columns" :data="tableInfo.imagesSecurityTable.data" :isShowHight="this.isShowHight(tableInfo.imagesSecurityTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="mainType=='4'">
+      <div class="list-item row">
+        <at-badge :value="mainTypeName" style="margin-left: 10px"></at-badge>
+      </div>
+      <div class="list-item row">
+        <div class="card col-md-12" style="height: 500px">
+          <table-card keyValue="flavorskey" height="460" :name="graphNames.name1" :columns="tableInfo.flavorsInfoTable.columns" :data="tableInfo.flavorsInfoTable.data" :isShowHight="this.isShowHight(tableInfo.flavorsInfoTable.data.length,9)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12" style="height: 500px">
+          <table-card keyValue="flavorskey" height="460" :name="graphNames.name2" :columns="tableInfo.flavorsInfoVmTable.columns" :data="tableInfo.flavorsInfoVmTable.data" :isShowHight="this.isShowHight(tableInfo.flavorsInfoVmTable.data.length,9)" :data-status="dataStatus"></table-card>
+        </div>
+      </div>
+    </div>
+
+    <div v-else-if="mainType=='6'">
+      <div class="list-item row">
+        <at-badge :value="mainTypeName" style="margin-left: 10px"></at-badge>
+      </div>
+      <div class="list-item row">
+        <div class="card col-md-12">
+          <table-card keyValue="key6" :name="graphNames.name1" :columns="tableInfo.netBaseTable.columns" :data="tableInfo.netBaseTable.data" :isShowHight="this.isShowHight(tableInfo.netBaseTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12">
+          <table-card keyValue="key7" :name="graphNames.name2" :columns="tableInfo.netSupplierTable.columns" :data="tableInfo.netSupplierTable.data" :isShowHight="this.isShowHight(tableInfo.netSupplierTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12">
+          <table-card keyValue="key8" :name="graphNames.name3" :columns="tableInfo.subNetTable.columns" :data="tableInfo.subNetTable.data" :isShowHight="this.isShowHight(tableInfo.subNetTable.data.length,4)" :data-status="dataStatus"></table-card>
+        </div>
+        <div class="card col-md-12">
+          <table-card keyValue="key9" :name="graphNames.name4" :columns="tableInfo.netPortTable.columns" :data="tableInfo.netPortTable.data" :isShowHight="this.isShowHight(tableInfo.netPortTable.data.length,4)" :data-status="dataStatus"></table-card>
         </div>
       </div>
     </div>

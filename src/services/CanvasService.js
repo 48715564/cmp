@@ -83,7 +83,6 @@ const drawNetWorkDepletionGraph = (el, data) => {
   const Chart = Echarts.init(el);
   if (!data) {
     data = {
-      title: '',
       xData: null,
       yData: {
         netCountArray: null
@@ -91,10 +90,6 @@ const drawNetWorkDepletionGraph = (el, data) => {
     };
   }
   Chart.setOption({
-    title: {
-      text: data.title,
-      x: 'center'
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -168,7 +163,6 @@ const drawCPUDepletionGraph = (el,data) => {
   const Chart = Echarts.init(el);
   if(!data){
     data = {
-      title:'',
       xData:null,
       yData:{
         cpuCountData:null,
@@ -177,10 +171,6 @@ const drawCPUDepletionGraph = (el,data) => {
     };
   }
   Chart.setOption({
-    title:{
-      text: data.title,
-      x: 'center'
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -242,7 +232,6 @@ const drawMemoryDepletionGraph = (el,data) => {
   const Chart = Echarts.init(el);
   if(!data){
     data = {
-      title:'',
       xData:null,
       yData:{
         memoryCountData:null,
@@ -251,10 +240,6 @@ const drawMemoryDepletionGraph = (el,data) => {
     };
   }
   Chart.setOption({
-    title:{
-      text: data.title,
-      x: 'center'
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
@@ -317,7 +302,6 @@ const drawStoreDepletionGraph = (el,data) => {
   const Chart = Echarts.init(el);
   if(!data){
     data = {
-      title:'',
       xData:null,
       yData:{
         localArray:null,
@@ -326,10 +310,6 @@ const drawStoreDepletionGraph = (el,data) => {
     };
   }
   Chart.setOption({
-    title:{
-      text: data.title,
-      x: 'center'
-    },
     tooltip: {
       trigger: 'axis',
       axisPointer: {
