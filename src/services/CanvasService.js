@@ -212,13 +212,13 @@ const drawCPUDepletionGraph = (el,data) => {
     ],
     series: [
       {
-        name: 'CPU总数',
+        name: 'VCPU总数',
         type: 'line',
         stack: 'cpu',
         data: data.yData.cpuCountData,
       },
       {
-        name: '已使用CPU数量',
+        name: '已使用VCPU数量',
         type: 'line',
         stack: 'cpu',
         data: data.yData.cpuUseCountData,
