@@ -9,7 +9,7 @@ Vue.component('top-dashboard', {
   template: '<div class="item">\n' +
   '          <div :class="iconClass" style="font-size: 2rem"></div>\n' +
   '          <div class="item-right">\n' +
-  '            <div style="text-align: center;font-size: x-large">\n' +
+  '            <div style="text-align: center;">\n' +
   '              <at-popover trigger="click" placement="bottom" v-if="count>0">\n' +
   '                <a href="javascript:void(0)">{{count}}</a>\n' +
   '                <template slot="content">\n' +
