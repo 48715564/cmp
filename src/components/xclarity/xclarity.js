@@ -93,7 +93,7 @@ export default {
         ],
         data: []
       },
-      sysResources:{
+      sysResources: {
         columns: [
           {
             title: '资源',
@@ -102,7 +102,7 @@ export default {
           {
             title: '使用情况',
             key: 'FlatUtil'
-          },{
+          }, {
             title: '总容量',
             key: 'Maximum'
           },
@@ -190,13 +190,27 @@ export default {
       XClarityService.sysResources().then((res) => {
         if (res.data.success) {
           const array = [];
-          for(let i = 0; i < res.data.result.length; i++){
+          for (let i = 0; i < res.data.result.length; i++) {
             const item = res.data.result[i];
             let tempData = {};
-            switch (item.Resource){
-              case 'processor':tempData={Resource:'处理器',FlatUtil:item.Utilization,Maximum:item.Maximum+'核心'}; break;
-              case 'ram':tempData={Resource:'RAM',FlatUtil:item.Utilization+`%(${item.FlatUtil}GB)`,Maximum:item.Maximum+'GB'}; break;
-              case 'hdd':tempData={Resource:'硬盘',FlatUtil:item.Utilization+`%(${item.FlatUtil}GB)`,Maximum:item.Maximum+'GB'}; break;
+            switch (item.Resource) {
+              case 'processor':
+                tempData = {Resource: '处理器', FlatUtil: item.Utilization, Maximum: item.Maximum + '核心'};
+                break;
+              case 'ram':
+                tempData = {
+                  Resource: 'RAM',
+                  FlatUtil: item.Utilization + `%(${item.FlatUtil}GB)`,
+                  Maximum: item.Maximum + 'GB'
+                };
+                break;
+              case 'hdd':
+                tempData = {
+                  Resource: '硬盘',
+                  FlatUtil: item.Utilization + `%(${item.FlatUtil}GB)`,
+                  Maximum: item.Maximum + 'GB'
+                };
+                break;
             }
             array.push(tempData);
           }

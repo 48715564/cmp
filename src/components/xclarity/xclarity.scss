@@ -15,23 +15,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    p{
+    p {
       font-size: inherit;
     }
   }
-  .item-margin-right{
+  .item-margin-right {
     margin-left: 10px;
   }
   .item {
     margin-top: 10px;
   }
-  .small-icon{
+  .small-icon {
     font-size: 1.5rem;
-    .text-span{
+    .text-span {
       margin-left: 5px;
     }
   }
-  .card-title{
+  .card-title {
     height: 35px;
     width: 100%;
     padding-left: 10px;
@@ -56,7 +56,7 @@
       align-items: center;
       &-top {
         display: flex;
-        flex:3;
+        flex: 3;
         flex-direction: row;
         justify-content: center;
         align-items: center;
@@ -69,9 +69,9 @@
         justify-content: space-around;
         align-items: center;
         width: 100%;
-        flex:2;
+        flex: 2;
       }
-      &-border-right{
+      &-border-right {
         border-right: 1px solid #aaaaaa;
       }
     }

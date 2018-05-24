@@ -36,7 +36,7 @@
       </div>
       <!--镜像-->
       <div class="top-card" style="width: 20%">
-        <top-dashboard name="镜像" iconClass="icon icon-cpu" :columns="tableInfo.imagesTable.columns"
+        <top-dashboard name="镜像" iconClass="icon myicon-jingxiang" :columns="tableInfo.imagesTable.columns"
                        :on_selection_change="on_selection_change"
                        :data="tableInfo.imagesTable.data" :isShowHight="isShowHight(data.imagesCount)"
                        :count="data.imagesCount"></top-dashboard>
@@ -44,7 +44,7 @@
 
       <!--实例类型-->
       <div class="top-card" style="width: 20%">
-        <top-dashboard name="实例类型" iconClass="icon myicon-neicun" :columns="tableInfo.flavorsTable.columns"
+        <top-dashboard name="实例类型" iconClass="icon myicon-yingyonchengxumuban" :columns="tableInfo.flavorsTable.columns"
                        :on_selection_change="on_selection_change"
                        :data="tableInfo.flavorsTable.data" :isShowHight="isShowHight(data.flavorsCount)"
                        :count="data.flavorsCount"></top-dashboard>
@@ -114,14 +114,17 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
-          <table-card keyValue="key1" height="350" :name="graphNames.name1" :columns="tableInfo.infoTable.columns" :data="tableInfo.infoTable.data" :isShowHight="this.isShowHight(tableInfo.infoTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key1" height="350" :name="graphNames.name1" :columns="tableInfo.infoTable.columns"
+                      :data="tableInfo.infoTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.infoTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
-      <div class="card col-md-12">
-        <graph :name="graphNames.name2" refname="bar1" :data-status="dataStatus"></graph>
-      </div>
-      <div class="card col-md-12">
-        <graph :name="graphNames.name3" refname="bar2" :data-status="dataStatus"></graph>
-      </div>
+        <div class="card col-md-12">
+          <graph :name="graphNames.name2" refname="bar1" :data-status="dataStatus"></graph>
+        </div>
+        <div class="card col-md-12">
+          <graph :name="graphNames.name3" refname="bar2" :data-status="dataStatus"></graph>
+        </div>
         <div class="card col-md-12">
           <graph :name="graphNames.name4" refname="bar3" :data-status="dataStatus"></graph>
         </div>
@@ -133,16 +136,28 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
-          <table-card keyValue="key2" height="350" :name="graphNames.name1" :columns="tableInfo.vmBaseTable.columns" :data="tableInfo.vmBaseTable.data" :isShowHight="this.isShowHight(tableInfo.vmBaseTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key2" height="350" :name="graphNames.name1" :columns="tableInfo.vmBaseTable.columns"
+                      :data="tableInfo.vmBaseTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.vmBaseTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key3" height="350" :name="graphNames.name2" :columns="tableInfo.vmSpecTable.columns" :data="tableInfo.vmSpecTable.data" :isShowHight="this.isShowHight(tableInfo.vmSpecTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key3" height="350" :name="graphNames.name2" :columns="tableInfo.vmSpecTable.columns"
+                      :data="tableInfo.vmSpecTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.vmSpecTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key4" height="350" :name="graphNames.name3" :columns="tableInfo.vmIPTable.columns" :data="tableInfo.vmIPTable.data" :isShowHight="this.isShowHight(tableInfo.vmIPTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key4" height="350" :name="graphNames.name3" :columns="tableInfo.vmIPTable.columns"
+                      :data="tableInfo.vmIPTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.vmIPTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key5" height="350" :name="graphNames.name4" :columns="tableInfo.vmImagesTable.columns" :data="tableInfo.vmImagesTable.data" :isShowHight="this.isShowHight(tableInfo.vmImagesTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key5" height="350" :name="graphNames.name4" :columns="tableInfo.vmImagesTable.columns"
+                      :data="tableInfo.vmImagesTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.vmImagesTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
       </div>
     </div>
@@ -153,16 +168,28 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
-          <table-card keyValue="key2" height="350" :name="graphNames.name1" :columns="tableInfo.imagesBaseTable.columns" :data="tableInfo.imagesBaseTable.data" :isShowHight="this.isShowHight(tableInfo.imagesBaseTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key2" height="350" :name="graphNames.name1" :columns="tableInfo.imagesBaseTable.columns"
+                      :data="tableInfo.imagesBaseTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.imagesBaseTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key3" height="350" :name="graphNames.name2" :columns="tableInfo.imagesSpecTable.columns" :data="tableInfo.imagesSpecTable.data" :isShowHight="this.isShowHight(tableInfo.imagesSpecTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key3" height="350" :name="graphNames.name2" :columns="tableInfo.imagesSpecTable.columns"
+                      :data="tableInfo.imagesSpecTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.imagesSpecTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key4" height="350" :name="graphNames.name3" :columns="tableInfo.imagesCAttrTable.columns" :data="tableInfo.imagesCAttrTable.data" :isShowHight="this.isShowHight(tableInfo.imagesCAttrTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key4" height="350" :name="graphNames.name3"
+                      :columns="tableInfo.imagesCAttrTable.columns" :data="tableInfo.imagesCAttrTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.imagesCAttrTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key5" height="350" :name="graphNames.name4" :columns="tableInfo.imagesSecurityTable.columns" :data="tableInfo.imagesSecurityTable.data" :isShowHight="this.isShowHight(tableInfo.imagesSecurityTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key5" height="350" :name="graphNames.name4"
+                      :columns="tableInfo.imagesSecurityTable.columns" :data="tableInfo.imagesSecurityTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.imagesSecurityTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
       </div>
     </div>
@@ -173,10 +200,16 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12" style="height: 500px">
-          <table-card keyValue="flavorskey" height="460" :name="graphNames.name1" :columns="tableInfo.flavorsInfoTable.columns" :data="tableInfo.flavorsInfoTable.data" :isShowHight="this.isShowHight(tableInfo.flavorsInfoTable.data.length,9)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="flavorskey" height="460" :name="graphNames.name1"
+                      :columns="tableInfo.flavorsInfoTable.columns" :data="tableInfo.flavorsInfoTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.flavorsInfoTable.data.length,9)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12" style="height: 500px">
-          <table-card keyValue="flavorskey" height="460" :name="graphNames.name2" :columns="tableInfo.flavorsInfoVmTable.columns" :data="tableInfo.flavorsInfoVmTable.data" :isShowHight="this.isShowHight(tableInfo.flavorsInfoVmTable.data.length,9)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="flavorskey" height="460" :name="graphNames.name2"
+                      :columns="tableInfo.flavorsInfoVmTable.columns" :data="tableInfo.flavorsInfoVmTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.flavorsInfoVmTable.data.length,9)"
+                      :data-status="dataStatus"></table-card>
         </div>
       </div>
     </div>
@@ -187,16 +220,28 @@
       </div>
       <div class="list-item row">
         <div class="card col-md-12">
-          <table-card keyValue="key6" :name="graphNames.name1" :columns="tableInfo.netBaseTable.columns" :data="tableInfo.netBaseTable.data" :isShowHight="this.isShowHight(tableInfo.netBaseTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key6" :name="graphNames.name1" :columns="tableInfo.netBaseTable.columns"
+                      :data="tableInfo.netBaseTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.netBaseTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key7" :name="graphNames.name2" :columns="tableInfo.netSupplierTable.columns" :data="tableInfo.netSupplierTable.data" :isShowHight="this.isShowHight(tableInfo.netSupplierTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key7" :name="graphNames.name2" :columns="tableInfo.netSupplierTable.columns"
+                      :data="tableInfo.netSupplierTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.netSupplierTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key8" :name="graphNames.name3" :columns="tableInfo.subNetTable.columns" :data="tableInfo.subNetTable.data" :isShowHight="this.isShowHight(tableInfo.subNetTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key8" :name="graphNames.name3" :columns="tableInfo.subNetTable.columns"
+                      :data="tableInfo.subNetTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.subNetTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
         <div class="card col-md-12">
-          <table-card keyValue="key9" :name="graphNames.name4" :columns="tableInfo.netPortTable.columns" :data="tableInfo.netPortTable.data" :isShowHight="this.isShowHight(tableInfo.netPortTable.data.length,4)" :data-status="dataStatus"></table-card>
+          <table-card keyValue="key9" :name="graphNames.name4" :columns="tableInfo.netPortTable.columns"
+                      :data="tableInfo.netPortTable.data"
+                      :isShowHight="this.isShowHight(tableInfo.netPortTable.data.length,4)"
+                      :data-status="dataStatus"></table-card>
         </div>
       </div>
     </div>

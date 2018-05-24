@@ -5,11 +5,11 @@ import Vue from 'vue';
 import _ from 'lodash';
 
 Vue.component('top-dashboard', {
-  props: ['name', 'iconClass', 'columns', 'on_selection_change', 'data', 'isShowHight', 'count','height'],
+  props: ['name', 'iconClass', 'columns', 'on_selection_change', 'data', 'isShowHight', 'count', 'height'],
   template: '<div class="item">\n' +
   '          <div :class="iconClass" style="font-size: 2rem"></div>\n' +
   '          <div class="item-right">\n' +
-  '            <div style="text-align: center">\n' +
+  '            <div style="text-align: center;font-size: x-large">\n' +
   '              <at-popover trigger="click" placement="bottom" v-if="count>0">\n' +
   '                <a href="javascript:void(0)">{{count}}</a>\n' +
   '                <template slot="content">\n' +
@@ -241,16 +241,18 @@ export default {
           data: []
         },
         flavorsInfoTable: _.clone(propertiesTable),
-        flavorsInfoVmTable:{
+        flavorsInfoVmTable: {
           columns: [
-            {title:'id',key:'id'},
-            {title:'名称',key:'name'},
-            {title:'创建时间',
+            {title: 'id', key: 'id'},
+            {title: '名称', key: 'name'},
+            {
+              title: '创建时间',
               render: (h, params) => {
                 return h('div', {}, toLocaleString(params.item['created']));
-              }}
+              }
+            }
           ],
-          data:[],
+          data: [],
         },
         hostTable: {
           columns: [
@@ -331,9 +333,9 @@ export default {
       this.moName = name;
       switch (type) {
         case '1':
-          this.graphNames = {name1: '主机信息', name2: 'cpu使用情况', name3: '内存使用情况', name4: '本地磁盘使用情况'};
+          this.graphNames = {name1: '主机信息', name2: 'VCPU使用情况', name3: '内存使用情况(MB)', name4: '本地磁盘使用情况(GB)'};
           this.loadMonitorData(id, OpenStackService.openStackHostById, [{
-            name: 'cpu使用情况'
+            name: 'VCPU使用情况'
           }, {name: '内存使用情况'}, {name: '本地磁盘使用情况'}], ["bar1", "bar2", "bar3"], this.hostCallbackFun);
           break;
         case '2':
@@ -342,11 +344,11 @@ export default {
           break;
         case '3':
           this.graphNames = {name1: '概况', name2: '规格信息', name3: '定制属性', name4: '安全'};
-          this.loadMonitorData(id, OpenStackService.openStackImagesById, null,null,this.imagesCallbackFun);
+          this.loadMonitorData(id, OpenStackService.openStackImagesById, null, null, this.imagesCallbackFun);
           break;
         case '4':
           this.graphNames = {name1: '概况', name2: '生成虚拟机列表'};
-          this.loadMonitorData(id, OpenStackService.openStackFlavorsById,null,null,this.flavorsCallbackFun);
+          this.loadMonitorData(id, OpenStackService.openStackFlavorsById, null, null, this.flavorsCallbackFun);
           break;
         case '6':
           this.graphNames = {name1: '基本信息', name2: '供应商网络', name3: '子网', name4: '端口'};
@@ -589,7 +591,7 @@ export default {
         imagesBaseTable.push({'name': '创建于', 'value': toLocaleString(data.item.created_at)});
         imagesBaseTable.push({'name': '更新于', 'value': toLocaleString(data.item.updated_at)});
 
-        imagesSpecTable.push({'name': '大小(MB)', 'value': this.bytesToSize(data.item.size,2)});
+        imagesSpecTable.push({'name': '大小(MB)', 'value': this.bytesToSize(data.item.size, 2)});
         imagesSpecTable.push({'name': '最小磁盘大小(GB)', 'value': data.item.min_disk});
         imagesSpecTable.push({'name': '最小内存(MB)', 'value': data.item.min_ram});
         imagesSpecTable.push({'name': '磁盘格式', 'value': data.item.disk_format});
@@ -598,7 +600,7 @@ export default {
         imagesCAttrTable.push({'name': 'schema', 'value': data.item.schema});
         imagesCAttrTable.push({'name': '虚拟大小', 'value': data.item.virtual_size});
         imagesCAttrTable.push({'name': 'file', 'value': data.item.file});
-        imagesCAttrTable.push({'name': '标签', 'value': _.join(data.item.tags,',')});
+        imagesCAttrTable.push({'name': '标签', 'value': _.join(data.item.tags, ',')});
 
         imagesSecurityTable.push({'name': '所有者', 'value': data.item.owner});
         imagesSecurityTable.push({'name': '可见性', 'value': data.item.visibility});
@@ -610,20 +612,20 @@ export default {
           imagesCAttrTable: imagesCAttrTable,
           imagesSecurityTable: imagesSecurityTable
         };
-      }else if (data.type == 'flavor') {
+      } else if (data.type == 'flavor') {
         let flavorsInfoTable = [], flavorsInfoVmTable = [];
         flavorsInfoTable.push({'name': 'ID', 'value': data.item.flavor.id});
         flavorsInfoTable.push({'name': '名称', 'value': data.item.flavor.name});
         flavorsInfoTable.push({'name': 'VCPU数量', 'value': data.item.flavor.vcpus});
-        flavorsInfoTable.push({'name': '内存(GB)', 'value': this.bytesToSize(data.item.flavor.ram,1)});
+        flavorsInfoTable.push({'name': '内存(GB)', 'value': this.bytesToSize(data.item.flavor.ram, 1)});
         flavorsInfoTable.push({'name': '根磁盘(GB)', 'value': data.item.flavor.disk});
         flavorsInfoTable.push({'name': '临时磁盘(GB)', 'value': data.item.flavor['OS-FLV-EXT-DATA:ephemeral']});
         flavorsInfoTable.push({'name': 'Swap磁盘(MB)', 'value': data.item.flavor.swap});
         flavorsInfoTable.push({'name': 'RX/TX 因子', 'value': data.item.flavor.rxtx_factor});
         flavorsInfoTable.push({'name': '公有', 'value': data.item.flavor['os-flavor-access:is_public']});
 
-        flavorsInfoVmTable=data.item.vmList;
-        return {flavorsInfoTable:flavorsInfoTable,flavorsInfoVmTable:flavorsInfoVmTable};
+        flavorsInfoVmTable = data.item.vmList;
+        return {flavorsInfoTable: flavorsInfoTable, flavorsInfoVmTable: flavorsInfoVmTable};
       }
     },
     changeNullData(data) {

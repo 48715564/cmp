@@ -39,7 +39,7 @@ axios.interceptors.request.use((config) => {
 var _ = this;
 axios.interceptors.response.use(response => {
   if(response.data&&response.data.errorCode=='401'){
-    localStorage.token='';
+    localStorage.token = '';
     location.reload(true);
   }
   return response

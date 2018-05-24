@@ -39,7 +39,7 @@ const drawCPUDepletionGraphBar = (el, data) => {
         name: 'cpu使用情况',
         type: 'pie',
         data: data,
-        radius : '55%',
+        radius: '55%',
         itemStyle: {
           emphasis: {
             shadowBlur: 10,
@@ -64,7 +64,7 @@ const drawMemoryDepletionGraphBar = (el, data) => {
       {
         name: '内存使用情况',
         type: 'pie',
-        radius : '55%',
+        radius: '55%',
         data: data,
         itemStyle: {
           emphasis: {
@@ -104,8 +104,7 @@ const drawNetWorkDepletionGraph = (el, data) => {
         type: 'category',
         data: data.xData,
         axisLabel: {
-          formatter:function(value)
-          {
+          formatter: function (value) {
             return value.split(" ").join("\n");
           }
         }
@@ -132,16 +131,16 @@ const drawNetWorkDepletionGraph = (el, data) => {
 const drawStoreDepletionGraphBar = (el, data) => {
   const Chart = Echarts.init(el);
   Chart.setOption({
-    tooltip : {
+    tooltip: {
       trigger: 'item',
       formatter: "{b}GB : {c}GB ({d}%)"
     },
-    series : [
+    series: [
       {
         name: '磁盘使用情况',
         type: 'pie',
         data: data,
-        radius : '55%',
+        radius: '55%',
         itemStyle: {
           emphasis: {
             shadowBlur: 10,
@@ -156,16 +155,14 @@ const drawStoreDepletionGraphBar = (el, data) => {
 };
 
 
-
-
-const drawCPUDepletionGraph = (el,data) => {
+const drawCPUDepletionGraph = (el, data) => {
   const Chart = Echarts.init(el);
-  if(!data){
+  if (!data) {
     data = {
-      xData:null,
-      yData:{
-        cpuCountData:null,
-        cpuUseCountData:null,
+      xData: null,
+      yData: {
+        cpuCountData: null,
+        cpuUseCountData: null,
       }
     };
   }
@@ -179,16 +176,15 @@ const drawCPUDepletionGraph = (el,data) => {
         },
       },
     },
-    xAxis : [
+    xAxis: [
       {
-        type : 'category',
+        type: 'category',
         data: data.xData,
         axisTick: {
           alignWithLabel: true
         },
         axisLabel: {
-          formatter:function(value)
-          {
+          formatter: function (value) {
             return value.split(" ").join("\n");
           }
         }
@@ -226,14 +222,14 @@ const drawCPUDepletionGraph = (el,data) => {
   return Chart;
 };
 
-const drawMemoryDepletionGraph = (el,data) => {
+const drawMemoryDepletionGraph = (el, data) => {
   const Chart = Echarts.init(el);
-  if(!data){
+  if (!data) {
     data = {
-      xData:null,
-      yData:{
-        memoryCountData:null,
-        memoryUseCountData:null,
+      xData: null,
+      yData: {
+        memoryCountData: null,
+        memoryUseCountData: null,
       }
     };
   }
@@ -254,16 +250,15 @@ const drawMemoryDepletionGraph = (el,data) => {
       bottom: '10px',
       containLabel: true,
     },
-    xAxis : [
+    xAxis: [
       {
-        type : 'category',
+        type: 'category',
         data: data.xData,
         axisTick: {
           alignWithLabel: true
         },
         axisLabel: {
-          formatter:function(value)
-          {
+          formatter: function (value) {
             return value.split(" ").join("\n");
           }
         }
@@ -302,14 +297,14 @@ const drawMemoryDepletionGraph = (el,data) => {
 };
 
 
-const drawStoreDepletionGraph = (el,data) => {
+const drawStoreDepletionGraph = (el, data) => {
   const Chart = Echarts.init(el);
-  if(!data){
+  if (!data) {
     data = {
-      xData:null,
-      yData:{
-        localArray:null,
-        localUseArray:null
+      xData: null,
+      yData: {
+        localArray: null,
+        localUseArray: null
       }
     };
   }
@@ -330,16 +325,15 @@ const drawStoreDepletionGraph = (el,data) => {
       bottom: '10px',
       containLabel: true,
     },
-    xAxis : [
+    xAxis: [
       {
-        type : 'category',
+        type: 'category',
         data: data.xData,
         axisTick: {
           alignWithLabel: true
         },
         axisLabel: {
-          formatter:function(value)
-          {
+          formatter: function (value) {
             return value.split(" ").join("\n");
           }
         }
@@ -365,7 +359,7 @@ const drawStoreDepletionGraph = (el,data) => {
         type: 'line',
         stack: 'store',
         data: data.yData.localArray,
-      },{
+      }, {
         name: '已使用本地存储',
         type: 'line',
         stack: 'store',
@@ -376,7 +370,7 @@ const drawStoreDepletionGraph = (el,data) => {
   return Chart;
 };
 
-const DepletionGraphBar = (el, data,series) => {
+const DepletionGraphBar = (el, data, series) => {
   if (data) {
     Echarts.dispose(el);
     const Chart = Echarts.init(el);
@@ -400,8 +394,8 @@ const DepletionGraphBar = (el, data,series) => {
       ]
     });
     return Chart;
-  }else{
-    el.innerHTML='暂无数据';
+  } else {
+    el.innerHTML = '暂无数据';
   }
 };
 

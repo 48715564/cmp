@@ -4,7 +4,7 @@ import axios from "axios";
 
 export default {
   name: 'login',
-  data () {
+  data() {
     return {
       username: '',
       password: '',
@@ -21,7 +21,8 @@ export default {
       } else if (!pwd) {
         $('#pwd').find('input').focus();
         return;
-      };
+      }
+      ;
 
       const result = AuthService.login(name, pwd)
         .then((res) => {
@@ -39,7 +40,7 @@ export default {
             });
             this.password = '';
           }
-        }).catch((res)=> {
+        }).catch((res) => {
 
         });
 

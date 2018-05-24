@@ -17,7 +17,7 @@ const router = new Router({
       path: '/dashboard',
       name: 'dashboard',
       component: Dashboard,
-      meta: { requireAuth: true },
+      meta: {requireAuth: true},
     },
     {
       path: '*',
@@ -38,7 +38,7 @@ router.beforeEach((to, from, next) => {
       });
     }
   } else {
-    if (to.path === '/login'&&token) next('/dashboard');
+    if (to.path === '/login' && token) next('/dashboard');
     else next();
   }
 });
