@@ -44,7 +44,7 @@ Vue.component('tableCard', {
   '            <p class="item-title">{{name}}</p>\n' +
   '            <div class="item-content" style="width: 100%;height: 100%;display: flex;justify-content: center;"\n' +
   '                 v-if="dataStatus">\n' +
-  '              <at-table :key="keyValue" :columns="columns" :data="data" stripe style="width: 100%;margin-top: 10px;" v-if="isShowHight" height="200" border></at-table>\n' +
+  '              <div v-if="isShowHight" style="height:200px;width: 100%;overflow-y: auto;"><at-table :key="keyValue" :columns="columns" :data="data" stripe style="width: 100%;margin-top: 10px;" border></at-table></div>\n' +
   '              <at-table :key="keyValue" :columns="columns" :data="data" stripe style="width: 100%;margin-top: 10px;" v-else border></at-table>\n' +
   '            </div>\n' +
   '            <div class="item-empty" v-else><p>暂无数据</p></div>\n' +

@@ -99,17 +99,16 @@ const drawNetWorkDepletionGraph = (el, data) => {
         },
       },
     },
-    grid: {
-      top: '30px',
-      left: '0',
-      right: '18px',
-      bottom: '10px',
-      containLabel: true,
-    },
     xAxis: [
       {
         type: 'category',
-        data: data.xData
+        data: data.xData,
+        axisLabel: {
+          formatter:function(value)
+          {
+            return value.split(" ").join("\n");
+          }
+        }
       }
     ],
     yAxis: [
@@ -180,19 +179,18 @@ const drawCPUDepletionGraph = (el,data) => {
         },
       },
     },
-    grid: {
-      top: '30px',
-      left: '0',
-      right: '18px',
-      bottom: '10px',
-      containLabel: true,
-    },
     xAxis : [
       {
         type : 'category',
         data: data.xData,
         axisTick: {
           alignWithLabel: true
+        },
+        axisLabel: {
+          formatter:function(value)
+          {
+            return value.split(" ").join("\n");
+          }
         }
       }
     ],
@@ -262,6 +260,12 @@ const drawMemoryDepletionGraph = (el,data) => {
         data: data.xData,
         axisTick: {
           alignWithLabel: true
+        },
+        axisLabel: {
+          formatter:function(value)
+          {
+            return value.split(" ").join("\n");
+          }
         }
       }
     ],
@@ -321,7 +325,7 @@ const drawStoreDepletionGraph = (el,data) => {
     },
     grid: {
       top: '30px',
-      left: '0',
+      left: '20px',
       right: '18px',
       bottom: '10px',
       containLabel: true,
@@ -332,6 +336,12 @@ const drawStoreDepletionGraph = (el,data) => {
         data: data.xData,
         axisTick: {
           alignWithLabel: true
+        },
+        axisLabel: {
+          formatter:function(value)
+          {
+            return value.split(" ").join("\n");
+          }
         }
       }
     ],
