@@ -24,8 +24,8 @@
       <div class="top-card col-md-4">
         <div class="item">
           <div class="icon myicon-jiqun" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center" v-if="data.dataCenterList instanceof Object">
+          <div class="item-right" style="font-size: x-large">
+            <div style="text-align: center;" v-if="data.dataCenterList instanceof Object">
               <at-popover trigger="click" placement="bottom">
                 <a href="javascript:void(0)">{{data.dataCenterList.length}}</a>
                 <template slot="content">
@@ -47,8 +47,8 @@
       <div class="top-card col-md-4">
         <div class="item">
           <div class="icon myicon-liuliangyunpingtaitubiao06" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center" v-if="data.clusterList instanceof Object">
+          <div class="item-right" style="font-size: x-large">
+            <div style="text-align: center;" v-if="data.clusterList instanceof Object">
               <at-popover trigger="click" placement="bottom">
                 <a href="javascript:void(0)">{{data.clusterList.length}}</a>
                 <template slot="content">
@@ -70,8 +70,8 @@
       <div class="top-card col-md-4">
         <div class="item">
           <div class="icon icon-server" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center" v-if="data.hostList instanceof Object">
+          <div class="item-right" style="font-size: x-large">
+            <div style="text-align: center;" v-if="data.hostList instanceof Object">
               <at-popover trigger="click" placement="bottom">
                 <a href="javascript:void(0)">{{data.hostList.length}}</a>
                 <template slot="content">
@@ -94,8 +94,8 @@
       <div class="top-card col-md-4">
         <div class="item">
           <div class="icon myicon-xuniji" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center" v-if="data.vmList instanceof Object">
+          <div class="item-right" style="font-size: x-large">
+            <div style="text-align: center;" v-if="data.vmList instanceof Object">
               <at-popover trigger="click" placement="bottom">
                 <a href="javascript:void(0)">{{data.vmList.length}}</a>
                 <template slot="content">
@@ -118,8 +118,8 @@
       <div class="top-card col-md-4">
         <div class="item">
           <div class="icon myicon-cipan" style="font-size: 2rem"></div>
-          <div class="item-right">
-            <div style="text-align: center" v-if="data.dsList instanceof Object">
+          <div class="item-right" style="font-size: x-large">
+            <div style="text-align: center;" v-if="data.dsList instanceof Object">
               <at-popover trigger="click" placement="bottom">
                 <a href="javascript:void(0)">{{data.dsList.length}}</a>
                 <template slot="content">
@@ -142,10 +142,10 @@
       <div class="top-card col-md-4">
         <div class="item">
           <div class="icon myicon-wangluo" style="font-size: 2rem"></div>
-          <div class="item-right">
+          <div class="item-right" style="font-size: x-large">
             <div style="text-align: center" v-if="data.dsList instanceof Object">
               <at-popover trigger="click" placement="bottom">
-                <a href="javascript:void(0)">{{data.networkList.length}}</a>
+                <a href="javascript:void(0)" style="font-size: x-large">{{data.networkList.length}}</a>
                 <template slot="content">
                   <at-table :columns="columns6" :on-selection-change="on_selection_change" :data="data6"
                             v-if="this.isShowHight(data.networkList.length)" height="350"></at-table>
