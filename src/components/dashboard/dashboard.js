@@ -23,6 +23,10 @@ export default {
       storeGraph:null,
       cpuGraphXData:[],
       cpuGraphYData:[],
+      cpuUsed:0,
+      ramGraphXData:[],
+      ramGraphYData:[],
+      ramUsed:0,
     }
   },
   methods: {
@@ -78,6 +82,22 @@ export default {
       }
     },
 
+    pushRamGraphXData(){
+      var date = new Date();
+      var time = _.padStart(date.getHours(),2,'0')+":"+ _.padStart(date.getMinutes(),2,'0')+":"+ _.padStart(date.getSeconds(),2,'0');
+      this.ramGraphXData.push(time);
+      if(this.ramGraphXData.length>20){
+        this.ramGraphXData.shift();
+      }
+    },
+
+    pushRamGraphYData(value){
+      this.ramGraphYData.push(value);
+      if(this.ramGraphYData.length>20){
+        this.ramGraphYData.shift();
+      }
+    },
+
     initLoadCpuMonitorData() {
 
       if (document.getElementById('cpuLine')) {
@@ -97,16 +117,49 @@ export default {
     loadMonitorData(isInit=true) {
       OvirtService.ovirtMonitorData().then((res)=>{
         if (res.data.success) {
+          //cpu信息
           this.pushCpuGraphXData();
           this.pushCpuGraphYData(res.data.result.cpuUsed);
           let cpuData = {xData: this.cpuGraphXData, yData:this.cpuGraphYData};
+          this.cpuUsed = res.data.result.cpuUsed;
+          //内存信息
+          this.pushRamGraphXData();
+          this.pushRamGraphYData(res.data.result.menoryUsed);
+          let ramData = {xData: this.ramGraphXData, yData:this.ramGraphYData};
+          this.ramUsed = res.data.result.menoryUsed;
+
           if(isInit){
             this.dataStatus = true;
             this.cpuGraph =  CanvasService.DepletionGraph(document.getElementById('cpuLine'), cpuData, true, {name: 'cpu使用率', stack: 'cpu'});
+            this.ramGraph =  CanvasService.DepletionGraph(document.getElementById('ramLine'), ramData, true, {name: '内存使用率', stack: 'ram'});
           }else {
             this.cpuGraph.setOption({
+              xAxis: [
+                {
+                  type: 'category',
+                  data: cpuData.xData,
+                  axisTick: {
+                    alignWithLabel: true
+                  }
+                }
+              ],
               series: [{
                 data: cpuData.yData
+              }]
+            });
+
+            this.ramGraph.setOption({
+              xAxis: [
+                {
+                  type: 'category',
+                  data: ramData.xData,
+                  axisTick: {
+                    alignWithLabel: true
+                  }
+                }
+              ],
+              series: [{
+                data: ramData.yData
               }]
             });
           }
