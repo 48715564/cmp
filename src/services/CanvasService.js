@@ -39,7 +39,7 @@ const percentageTooltip = {
   trigger: 'axis',
   formatter: function (params, ticket, callback) {
     if (params[0].value) {
-      let val = params[0].seriesName + ":" + (params[0].value / 100) + "%<br/>" + params[0].name;
+      let val = params[0].seriesName + ":" + (params[0].value) + "%<br/>" + params[0].name;
       return val;
     } else {
       return params[0].seriesName + ":-";
@@ -64,13 +64,13 @@ const percentageYAxis = [
   {
     axisLabel: {
       formatter: function (val) {
-        return val / 100 + '%';
+        return val + '%';
       }
     },
     axisPointer: {
       label: {
         formatter: function (params) {
-          return ((params.value) / 100).toFixed(1) + '%';
+          return ((params.value)).toFixed(1) + '%';
         }
       }
     },
@@ -81,34 +81,150 @@ const percentageYAxis = [
   },
 ];
 
+const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
+  const scale = 1;
+  const total = normalHostCount + unNormalHostCount;
 
-const DepletionGraphBar = (el, data,series) => {
-  if (data) {
-    Echarts.dispose(el);
-    const Chart = Echarts.init(el);
-    Chart.setOption({
-      tooltip: {
-        trigger: 'item'
+  const Chart = Echarts.init(el);
+  Chart.setOption({
+    title: {
+      text: total,
+      left: center,
+      top: '35%',
+      textStyle: {
+        color: $blackDark,
+        fontSize: 16 * scale,
       },
-      series: [
+      subtext: '台主机',
+      subtextStyle: {
+        color: $greyDark,
+        fontSize: 12 * scale,
+      },
+      padding: 0,
+    },
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b}: {d}%',
+    },
+    legend: {
+      selectedMode: false,
+    },
+    series: [{
+      name: '主机',
+      type: 'pie',
+      radius: ['50%', '90%'],
+      // hover时 动画效果
+      hoverAnimation: true,
+      hoverOffset: 3,
+      avoidLabelOverlap: false,
+      labelLine: {
+        normal: {
+          show: true,
+        },
+      },
+      data: [
         {
-          name: series.name,
-          type: 'pie',
-          data: data,
+          value: normalHostCount,
+          name: '在线主机',
           itemStyle: {
-            emphasis: {
-              shadowBlur: 10,
-              shadowOffsetX: 0,
-              shadowColor: 'rgba(0, 0, 0, 0.5)'
-            }
-          }
-        }
-      ]
-    });
-    return Chart;
-  }else{
-    el.innerHTML='暂无数据';
-  }
+            normal: {
+              color: $blue,
+            },
+          },
+          label: {
+            normal: {
+              show: false,
+              position: 'inside',
+            },
+          },
+        },
+        {
+          value: unNormalHostCount,
+          name: '离线主机',
+          itemStyle: {
+            normal: {
+              color: $red,
+            },
+          },
+          label: {
+            normal: {
+              show: false,
+              position: 'inside',
+            },
+          },
+        },
+      ],
+    },
+    ],
+  });
+};
+
+
+const drawStorage = (el,availableCount,usedCount) => {
+  const scale = 1;
+  const total = availableCount + usedCount;
+
+  const Chart = Echarts.init(el);
+  Chart.setOption({
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a}:<br/> {c} TB',
+    },
+    grid: {
+      top: '28%',
+      left: '-15px',
+      right: '0',
+      bottom: '28%',
+      containLabel: true,
+    },
+    xAxis: {
+      show: false,
+      type: 'value',
+    },
+    yAxis: {
+      show: false,
+      type: 'category',
+      data: ['R'],
+    },
+    series: [{
+      name: '可用',
+      type: 'bar',
+      stack: 'total',
+      label: {
+        normal: {
+          show: false,
+          fontSize: 12,
+          position: 'inside',
+        },
+      },
+      itemStyle: {
+        normal: {
+          barBorderRadius: [100, 0, 0, 100],
+          color: $blue,
+        },
+      },
+      data: [availableCount],
+    },{
+      name: '已用',
+      type: 'bar',
+      stack: 'total',
+      label: {
+        normal: {
+          show: false,
+          fontSize: 12,
+          position: 'inside',
+        },
+      },
+      itemStyle: {
+        normal: {
+          barBorderRadius: [0, 50, 50, 0],
+          color: $red,
+        },
+      },
+      data: [usedCount],
+    },
+    ],
+  });
 };
 
 const DepletionGraph = (el, data, isPercentage, series) => {
@@ -160,5 +276,5 @@ const DepletionGraph = (el, data, isPercentage, series) => {
   }
 };
 export default {
-  DepletionGraph,DepletionGraphBar
+  DepletionGraph,drawServerGraph,drawStorage
 };

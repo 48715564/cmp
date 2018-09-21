@@ -17,6 +17,9 @@ module.exports = {
     xClarity_jobs:`${API}/XClarity/jobs`,
     xClarity_sessions:`${API}/XClarity/sessions`,
     xClarity_sysResources:`${API}/XClarity/sysResources`,
+    ovirtIndexInfoData:`${API}/ovirt/indexInfo`,
+    ovirtMonitorData:`${API}/ovirt/monitorData`,
+
   },
   BASE_URL: API,
   POST_URL: process.env.POST_URL,

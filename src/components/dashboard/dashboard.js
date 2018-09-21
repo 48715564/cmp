@@ -1,187 +1,31 @@
 import CanvasService from '@/services/CanvasService.js';
-import VMWareService from '@/services/VMWareService.js';
+import OvirtService from '@/services/OvirtService.js';
 import Xclarity from '@/components/xclarity/xclarity.vue';
 import _ from 'lodash';
-import Vue from 'vue';
-
-Vue.component('graph', {
-  props: ['name', 'refname', 'dataStatus'],
-  template: '<div class="item">\n' +
-  '            <p class="item-title">{{name}}</p>\n' +
-  '            <div class="item-content" style="width: 100%;height: 100%;display: flex;" v-if="dataStatus">\n' +
-  '              <div class="item-canvas" style="flex:1" :id="refname">加载中...</div>\n' +
-  '            </div>\n' +
-  '            <div class="item-empty" v-else><p>暂无数据</p></div>\n' +
-  '          </div>'
-});
 
 const loadMsg = '加载中...';
 const loadErrorMsg = [];
-const renderColor = (h, params) => {
-  return h('div', {
-    style: {
-      color: params.item.overallStatus
-    }
-  }, params.item.overallStatus);
-};
-const nameColumn = {
-  title: '名称',
-  key: 'name'
-};
-const overallStatusColumn = {
-  title: '健康状态',
-  key: 'overallStatus',
-  render: renderColor
-};
-const connectionStateColumn = {
-  title: '连接状态',
-  key: 'runtime.connectionState'
-};
-const powerStateColumn = {
-  title:'电源状态',
-  key:'runtime.powerState'
-};
+
 export default {
   name: 'dashboard',
   data() {
     return {
-      mainType: 0,
-      tableHeight: 350,
-      graphNames: {
-        name1: '',
-        name2: '',
-        name3: '',
-        name4: ''
-      },
-      graphDatas: [],
-      cpuAndMenInfo: {
-        freeMemorySize: 0,
-        freeCpuMhz: 0,
-        usedCpuMhz: 0,
-        usedMemorySize: 0,
-        cpuMhz: 0,
-        memorySize: 0,
-      },
-      storeInfo: {
-        freeStore: 0,
-        usedStore: 0,
-        store: 0
-      },
-      DepletionGraph1: null,
-      DepletionGraph2: null,
-      DepletionGraph3: null,
-      DepletionGraph4: null,
-      columns1: [
-        nameColumn,
-        overallStatusColumn,
-        connectionStateColumn, {
-          title: '操作',
-          render: (h, params) => {
-            return this.tableRender(h,params,'3');
-          }
-        }
-      ],
-      data1: [],
-      columns2: [
-        nameColumn,
-        overallStatusColumn, {
-          title: '操作',
-          render: (h, params) => {
-            return this.tableRender(h,params,'1');
-          }
-        }
-      ],
-      data2: [],
-      columns3: [
-        nameColumn,
-        overallStatusColumn, {
-          title: '操作',
-          render: (h, params) => {
-            return this.tableRender(h,params,'2');
-          }
-        }
-      ],
-      data3: [],
-      columns4: [
-        nameColumn,
-        overallStatusColumn, powerStateColumn, {
-          title: '操作',
-          render: (h, params) => {
-            return this.tableRender(h,params,'4',params.item['runtime.powerState'] == 'poweredOff');
-          }
-        }
-      ],
-      data4: [],
-      columns5: [
-        nameColumn,
-        overallStatusColumn,
-        {
-          title: '是否可以访问',
-          key: 'summary.accessible'
-        }, {
-          title: '操作',
-          render: (h, params) => {
-            return this.tableRender(h,params,'5');
-          }
-        }
-      ],
-      data5: [],
-      columns6: [
-        nameColumn,
-        overallStatusColumn, {
-          title: '操作',
-          render: (h, params) => {
-            return this.tableRender(h,params,'6');
-          }
-        }
-      ],
-      data6: [],
-      dataNetWorkHost: [],
-      columnsNetWorkHost: [
-        nameColumn,
-        overallStatusColumn,
-        connectionStateColumn
-      ],
-      dataNetWorkVM: [],
-      columnsNetWorkVM: [
-        nameColumn,
-        overallStatusColumn,
-        powerStateColumn
-      ],
-      data: {
-        dataCenterList: loadMsg,
-        hostList: loadMsg,
-        clusterList: loadMsg,
-        vmList: loadMsg,
-        dsList: loadMsg,
-        networkList: loadMsg,
-      },
-      dataStatus: true,
-      historyData: true,
+      dataStatus:true,
+      indexInfoIsLoad: true,
+      networkInfo: false,
+      hostInfo: false,
+      alertEvents: false,
+      storageInfo: false,
       isXClarity: false,
-      moName: ''
+      cpuGraph:null,
+      ramGraph:null,
+      networkGraph:null,
+      storeGraph:null,
+      cpuGraphXData:[],
+      cpuGraphYData:[],
     }
   },
   methods: {
-    tableRender(h, params,type,disable=false){
-      return h('div', [
-        h('AtButton', {
-          props: {
-            size: 'small',
-            hollow: true,
-            disabled:disable
-          },
-          style: {
-            marginRight: '8px'
-          },
-          on: {
-            click: () => {
-              this.on_selection_change(params.item.name, type)
-            }
-          }
-        }, '查看')
-      ])
-    },
     logout() {
       localStorage.token = '';
       location.reload(true);
@@ -200,403 +44,98 @@ export default {
     bytesToSize: function (bytes, i) {
       if (bytes === 0) return '0';
       let k = 1024;
-      return (bytes / Math.pow(k, i));
+      return this.round((bytes / Math.pow(k, i)),2);
       //toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-    },
-    getStoreInfo: function (storeList) {
-      if (storeList) {
-        let freeStore = 0, usedStore = 0, store = 0;
-        _.each(storeList, (items) => {
-          let summary = _.find(items.propSet, (item) => {
-            return item.name == 'summary';
-          }).val;
-          if (summary) {
-            if (summary.accessible) {
-              freeStore = freeStore + this.bytesToSize(summary.freeSpace, 4);
-            }
-            store = store + this.bytesToSize(summary.capacity, 4);
-          }
-        });
-        usedStore = store - freeStore;
-        return {store, usedStore, freeStore};
-      }
-    },
-    getCpuAndMemInfo: function (hostList) {
-      if (hostList) {
-        let cpuMhz = 0, memorySize = 0, usedCpuMhz = 0, usedMemorySize = 0;
-        for (let i = 0; i < hostList.length; i++) {
-          let summary = _.find(hostList[i].propSet, (item) => {
-            return item.name == 'summary';
-          }).val;
-          if (summary) {
-            cpuMhz = cpuMhz + (summary.hardware.cpuMhz * summary.hardware.numCpuCores) / 1000
-            memorySize = memorySize + summary.hardware.memorySize;
-            usedCpuMhz = usedCpuMhz + summary.quickStats.overallCpuUsage / 1000;
-            usedMemorySize = usedMemorySize + summary.quickStats.overallMemoryUsage;
-          }
-        }
-        let freeCpuMhz = cpuMhz - usedCpuMhz;
-        memorySize = this.bytesToSize(memorySize, 3);
-        usedMemorySize = this.bytesToSize(usedMemorySize, 1);
-        let freeMemorySize = memorySize - usedMemorySize;
-        return {freeCpuMhz, freeMemorySize, cpuMhz, memorySize, usedCpuMhz, usedMemorySize};
-      }
-    },
-    isShowHight: function (size) {
-      if (size > 7) {
-        return true
-      } else {
-        return false;
-      }
-    },
-    on_selection_change(data, type) {
-      // if (this.mainType != type || this.moName != data) {
-      this.moName = data;
-      this.mainType = type;
-      switch (type) {
-        case '1':
-          this.graphNames = {name1: '虚拟机打开电源次数', name2: '虚拟机关闭电源次数', name3: '虚拟机克隆次数', name4: '虚拟机创建次数'};
-          this.loadMonitorData(data, VMWareService.getDataCenterMonitorData, [false, false, false, false], [{
-            name: '虚拟机打开电源次数',
-            stack: 'numPoweron'
-          }, {name: '虚拟机关闭电源次数', stack: 'numPoweroff'}, {name: '虚拟机克隆次数', stack: 'numClone'}, {
-            name: '虚拟机创建次数',
-            stack: 'numCreate'
-          }]);
-          break;
-        case '2':
-          this.graphNames = {name1: 'cpu使用率', name2: 'cpu使用情况(MHZ)', name3: '内存使用率', name4: '内存已消耗情况(MB)'};
-          this.loadMonitorData(data, VMWareService.getClusterMonitorData, [true, false, true, false], [{
-            name: 'CPU使用率',
-            stack: 'cpu'
-          }, {name: 'cpu使用情况', stack: 'cpumhz'}, {name: '内存使用率', stack: 'mem'}, {
-            name: '内存已消耗情况',
-            stack: 'memkb'
-          }], [0, 0, 0, 1]);
-          break;
-        case '3':
-          this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘使用情况(KBps)', name4: '网络使用情况(KBps)'};
-          this.loadMonitorData(data, VMWareService.getHostMonitorData, [true, true, false, false], [{
-            name: 'CPU使用率',
-            stack: 'cpu'
-          }, {name: '内存使用率', stack: 'memory'}, {name: '汇总的磁盘I/O速度', stack: 'store'}, {
-            name: '传输和接收总速度',
-            stack: 'network'
-          }]);
-          break;
-        case '4':
-          this.graphNames = {name1: 'CPU使用率', name2: '内存使用率', name3: '磁盘最长滞后时间(毫秒)', name4: '网络使用情况(KBps)'};
-          this.loadMonitorData(data, VMWareService.getVMMonitorData, [true, true, false, false], [{
-            name: 'CPU使用率',
-            stack: 'cpu'
-          }, {name: '内存使用率', stack: 'memory'}, {name: '最长滞后时间', stack: 'store'}, {
-            name: '传输和接收总速度',
-            stack: 'network'
-          }]);
-          break;
-        case '5':
-          this.loadStoreMonitorData(data, [{name: '存储使用情况'}, {name: '已使用', stack: 'used'}, {
-            name: '已分配',
-            stack: 'provisioned'
-          }, {name: '总容量', stack: 'capacity'}]);
-          break;
-        case '6':
-          this.loadNetworkMonitorData(data);
-          break;
-        default:
-          break;
-      }
-      // }
     },
     gotoVMWare() {
       window.open('https://172.16.90.253/ui');
     },
-    getHostName(hostList) {
-      if (hostList && hostList.length > 0) {
-        let temp = hostList[0]['propSet'];
-        for (let i = 0; i < temp.length; i++) {
-          if (temp[i]['name'] == 'name') {
-            return temp[i]['val'];
-          }
-        }
-      }
-    },
-    getHostTables(hostList) {
-      let data = [];
-      if (hostList && hostList.length > 0) {
-        for (let count = 0; count < hostList.length; count++) {
-          let temp = hostList[count]["propSet"];
 
-          let json = {};
-          for (let i = 0; i < temp.length; i++) {
-            json[temp[i].name] = temp[i]['val'];
+    ellipsis (value,size=32) {
+      if (!value) return ''
+      if (value.length > size) {
+        return value.slice(0,size) + '...'
+      }
+      return value
+    },
+    networkStr(data){
+      return `网络名称：${data.name}，描述：${data.description}`;
+    },
+
+    pushCpuGraphXData(){
+      var date = new Date();
+      var time = _.padStart(date.getHours(),2,'0')+":"+ _.padStart(date.getMinutes(),2,'0')+":"+ _.padStart(date.getSeconds(),2,'0');
+      this.cpuGraphXData.push(time);
+      if(this.cpuGraphXData.length>20){
+        this.cpuGraphXData.shift();
+      }
+    },
+
+    pushCpuGraphYData(value){
+      this.cpuGraphYData.push(value);
+      if(this.cpuGraphYData.length>20){
+        this.cpuGraphYData.shift();
+      }
+    },
+
+    initLoadCpuMonitorData() {
+
+      if (document.getElementById('cpuLine')) {
+        document.getElementById('cpuLine').innerHTML = loadMsg;
+      }
+      if (document.getElementById('storeLine')) {
+        document.getElementById('storeLine').innerHTML = loadMsg;
+      }
+      if (document.getElementById('networkLine')) {
+        document.getElementById('networkLine').innerHTML = loadMsg;
+      }
+      if (document.getElementById('ramLine')) {
+        document.getElementById('ramLine').innerHTML = loadMsg;
+      }
+      this.loadMonitorData();
+    },
+    loadMonitorData(isInit=true) {
+      OvirtService.ovirtMonitorData().then((res)=>{
+        if (res.data.success) {
+          this.pushCpuGraphXData();
+          this.pushCpuGraphYData(res.data.result.cpuUsed);
+          let cpuData = {xData: this.cpuGraphXData, yData:this.cpuGraphYData};
+          if(isInit){
+            this.dataStatus = true;
+            this.cpuGraph =  CanvasService.DepletionGraph(document.getElementById('cpuLine'), cpuData, true, {name: 'cpu使用率', stack: 'cpu'});
+          }else {
+            this.cpuGraph.setOption({
+              series: [{
+                data: cpuData.yData
+              }]
+            });
           }
-          data.push(json);
-        }
-      }
-      return data;
-    },
-    getLineData(data, type = 0) {
-      if (data) {
-        let returnData = {};
-        returnData.xData = data.xLine;
-        for (let i = 0; i < data.longs.length; i++) {
-          if (data.longs[i].instance == '') {
-            if (type != 0) {
-              let array = [];
-              _.each(data.longs[i].list, item => {
-                if (item) {
-                  array.push(this.round(this.bytesToSize(item, type)));
-                } else {
-                  array.push(item);
-                }
-              });
-              returnData.yData = array;
-            } else {
-              returnData.yData = data.longs[i].list;
-            }
-            break;
+        }else {
+          if(isInit) {
+            this.dataStatus = false;
           }
-        }
-        return returnData;
-      } else {
-        return null;
-      }
-    },
-    loadNetworkMonitorData(val) {
-      VMWareService.getNetworkMonitorData(val).then((res) => {
-        if (res.data.success) {
-          this.dataStatus = true;
-          this.dataNetWorkHost = this.getHostTables(this.data.hostList);
-          this.dataNetWorkVM = this.getHostTables(this.data.vmList);
-        } else {
-          this.dataStatus = false;
-        }
-      });
-    },
-    loadStoreMonitorData(val, series) {
-      if (document.getElementById('bar1')) {
-        document.getElementById('bar1').innerHTML = loadMsg;
-      }
-      if (document.getElementById('line1')) {
-        document.getElementById('line1').innerHTML = loadMsg;
-      }
-      if (document.getElementById('line2')) {
-        document.getElementById('line2').innerHTML = loadMsg;
-      }
-      if (document.getElementById('line3')) {
-        document.getElementById('line3').innerHTML = loadMsg;
-      }
-      VMWareService.getDSMonitorData(val).then((res) => {
-        if (res.data.success) {
-          this.dataStatus = true;
-          let capacity = res.data.result.summary.capacity;
-          let freeSpace = res.data.result.summary.freeSpace;
-          let usedSpace = capacity - freeSpace;
-          freeSpace = _.round(this.bytesToSize(freeSpace, 3), 2);
-          usedSpace = _.round(this.bytesToSize(usedSpace, 3), 2);
-          this.DepletionGraph1 = CanvasService.DepletionGraphBar(document.getElementById('bar1'), [{
-            name: '空闲',
-            value: freeSpace
-          }, {name: '已用', value: usedSpace}], series[0]);
-          this.DepletionGraph2 = CanvasService.DepletionGraph(document.getElementById('line1'), this.getLineData(res.data.result.usedMap, 2), false, series[1]);
-          this.DepletionGraph3 = CanvasService.DepletionGraph(document.getElementById('line2'), this.getLineData(res.data.result.provisionedMap, 2), false, series[2]);
-          this.DepletionGraph4 = CanvasService.DepletionGraph(document.getElementById('line3'), this.getLineData(res.data.result.capacityMap, 2), false, series[3]);
-        } else {
-          this.dataStatus = false;
-        }
-      });
-    },
-    loadMonitorData(val, fun, isPercentage, series, lineDataFomater = [0, 0, 0, 0]) {
-      if (document.getElementById('line1')) {
-        document.getElementById('line1').innerHTML = loadMsg;
-      }
-      if (document.getElementById('line2')) {
-        document.getElementById('line2').innerHTML = loadMsg;
-      }
-      if (document.getElementById('line3')) {
-        document.getElementById('line3').innerHTML = loadMsg;
-      }
-      if (document.getElementById('line4')) {
-        document.getElementById('line4').innerHTML = loadMsg;
-      }
-      fun(val).then((res) => {
-        if (res.data.success) {
-          this.dataStatus = true;
-          this.DepletionGraph1 = CanvasService.DepletionGraph(document.getElementById('line1'), this.getLineData(res.data.result.data1, lineDataFomater[0]), isPercentage[0], series[0]);
-          this.DepletionGraph2 = CanvasService.DepletionGraph(document.getElementById('line2'), this.getLineData(res.data.result.data2, lineDataFomater[1]), isPercentage[1], series[1]);
-          this.DepletionGraph3 = CanvasService.DepletionGraph(document.getElementById('line3'), this.getLineData(res.data.result.data3, lineDataFomater[2]), isPercentage[2], series[2]);
-          this.DepletionGraph4 = CanvasService.DepletionGraph(document.getElementById('line4'), this.getLineData(res.data.result.data4, lineDataFomater[3]), isPercentage[3], series[3]);
-        } else {
-          this.dataStatus = false;
         }
       });
     },
   },
   mounted() {
-    VMWareService.VMWareInfo().then((res) => {
-      if (res.data.success) {
-        this.data = res.data.result;
-        if (this.data.hostList && this.data.hostList.length > 0) {
-          this.data1 = this.getHostTables(this.data.hostList);
-          this.data2 = this.getHostTables(this.data.dataCenterList);
-          this.data3 = this.getHostTables(this.data.clusterList);
-          this.data4 = this.getHostTables(this.data.vmList);
-          this.data5 = this.getHostTables(this.data.dsList);
-          this.data6 = this.getHostTables(this.data.networkList);
-          this.cpuAndMenInfo = this.getCpuAndMemInfo(this.data.hostList);
-          this.storeInfo = this.getStoreInfo(this.data.dsList);
-        }
-      } else {
-        this.dataStatus = false;
-        this.data = {
-          dataCenterList: loadErrorMsg,
-          hostList: loadErrorMsg,
-          clusterList: loadErrorMsg,
-          vmList: loadErrorMsg,
-          dsList: loadErrorMsg,
-          networkList: loadErrorMsg
+    OvirtService.ovirtIndexInfo().then((res) => {
+        if (res.data.success) {
+          this.hostInfo=res.data.result.hostInfo;
+          this.indexInfoIsLoad = false;
+          CanvasService.drawServerGraph(this.$refs.server,res.data.result.hostInfo.normalHostCount,res.data.result.hostInfo.unNormalHostCount);
+          this.storageInfo = res.data.result.storageInfo;
+          CanvasService.drawStorage(this.$refs.store,this.bytesToSize(res.data.result.storageInfo.availableCount,4),this.bytesToSize(res.data.result.storageInfo.usedCount,4));
+          this.networkInfo = res.data.result.networkInfo;
+          this.alertEvents = res.data.result.alertEvents;
         }
       }
-    });
+    );
+    this.initLoadCpuMonitorData();
+    setInterval(()=>{
+      this.loadMonitorData(false);
+    },1000);
   },
-  computed: {
-    mainTypeName: function () {
-      switch (this.mainType) {
-        case '1':
-          return '数据中心:' + this.moName;
-          break;
-        case '2':
-          return '集群:' + this.moName;
-          break;
-        case '3':
-          return '主机:' + this.moName;
-          break;
-        case '4':
-          return '虚拟机:' + this.moName;
-          break;
-        case '5':
-          return '存储:' + this.moName;
-          break;
-        case '6':
-          return '网络:' + this.moName;
-          break;
-        default:
-          break;
-      }
-    },
-    cpuPercent: function () {
-      if (this.cpuAndMenInfo.usedCpuMhz && this.cpuAndMenInfo.cpuMhz) {
-        return _.round(this.cpuAndMenInfo.usedCpuMhz * 100 / this.cpuAndMenInfo.cpuMhz, 2);
-      } else {
-        return 0;
-      }
-    },
-    memPercent: function () {
-      if (this.cpuAndMenInfo.usedMemorySize && this.cpuAndMenInfo.memorySize) {
-        return _.round(this.cpuAndMenInfo.usedMemorySize * 100 / this.cpuAndMenInfo.memorySize, 2);
-      }
-      else {
-        return 0;
-      }
-    },
-    storePercent: function () {
-      if (this.storeInfo.usedStore && this.storeInfo.store) {
-        return _.round(this.storeInfo.usedStore * 100 / this.storeInfo.store, 2);
-      } else {
-        return 0;
-      }
-    },
-    vmPowerOn: function () {
-      if (this.data.vmList instanceof Object) {
-        let count = 0;
-        _.each(this.data.vmList, (item) => {
-          if (_.find(item.propSet, (i) => {
-              return i.name == 'runtime.powerState';
-            }).val == 'poweredOn') {
-            count++;
-          }
-        });
-        return count;
-      } else {
-        return loadMsg;
-      }
-    },
-    vmPowerOff: function () {
-      if (this.data.vmList instanceof Object) {
-        let count = 0;
-        _.each(this.data.vmList, (item) => {
-          if (_.find(item.propSet, (i) => {
-              return i.name == 'runtime.powerState';
-            }).val == 'poweredOff') {
-            count++;
-          }
-        });
-        return count;
-      } else {
-        return loadMsg;
-      }
-    },
-    suspended: function () {
-      if (this.data.vmList instanceof Object) {
-        let count = 0;
-        _.each(this.data.vmList, (item) => {
-          if (_.find(item.propSet, (i) => {
-              return i.name == 'runtime.powerState';
-            }).val == 'suspended') {
-            count++;
-          }
-        });
-        return count;
-      } else {
-        return loadMsg;
-      }
-    },
-    hostConnected: function () {
-      if (this.data.hostList instanceof Object) {
-        let count = 0;
-        _.each(this.data.hostList, (item) => {
-          if (_.find(item.propSet, (i) => {
-              return i.name == 'runtime.connectionState';
-            }).val == 'connected') {
-            count++;
-          }
-        });
-        return count;
-      } else {
-        return loadMsg;
-      }
-    },
-    hostDisconnected: function () {
-      if (this.data.hostList instanceof Object) {
-        let count = 0;
-        _.each(this.data.hostList, (item) => {
-          if (_.find(item.propSet, (i) => {
-              return i.name == 'runtime.connectionState';
-            }).val == 'disconnected') {
-            count++;
-          }
-        });
-        return count;
-      } else {
-        return loadMsg;
-      }
-    },
-    hostNotResponding: function () {
-      if (this.data.hostList instanceof Object) {
-        let count = 0;
-        _.each(this.data.hostList, (item) => {
-          if (_.find(item.propSet, (i) => {
-              return i.name == 'runtime.connectionState';
-            }).val == 'notResponding') {
-            count++;
-          }
-        });
-        return count;
-      } else {
-        return loadMsg;
-      }
-    },
-  },
+  computed: {},
   components: {Xclarity},
 };
