@@ -27,6 +27,11 @@ export default {
       ramGraphXData:[],
       ramGraphYData:[],
       ramUsed:0,
+      nicReceiveYData:[],
+      nicReceiveUsed:0,
+      nicGraphXData:[],
+      nicTransmitYData:[],
+      nicTransmitUsed:0,
     }
   },
   methods: {
@@ -64,6 +69,29 @@ export default {
     },
     networkStr(data){
       return `网络名称：${data.name}，描述：${data.description}`;
+    },
+
+    pushNicGraphXData(){
+      var date = new Date();
+      var time = _.padStart(date.getHours(),2,'0')+":"+ _.padStart(date.getMinutes(),2,'0')+":"+ _.padStart(date.getSeconds(),2,'0');
+      this.nicGraphXData.push(time);
+      if(this.nicGraphXData.length>20){
+        this.nicGraphXData.shift();
+      }
+    },
+
+    pushNicReceiveYData(value){
+      this.nicReceiveYData.push(value);
+      if(this.nicReceiveYData.length>20){
+        this.nicReceiveYData.shift();
+      }
+    },
+
+    pushNicTransmitYData(value){
+      this.nicTransmitYData.push(value);
+      if(this.nicTransmitYData.length>20){
+        this.nicTransmitYData.shift();
+      }
     },
 
     pushCpuGraphXData(){
@@ -127,11 +155,22 @@ export default {
           this.pushRamGraphYData(res.data.result.menoryUsed);
           let ramData = {xData: this.ramGraphXData, yData:this.ramGraphYData};
           this.ramUsed = res.data.result.menoryUsed;
-
+          //网络IO信息
+          this.pushNicGraphXData();
+          this.pushNicReceiveYData(this.bytesToSize(res.data.result.nicInfo.receiveData,1));
+          this.pushNicTransmitYData(this.bytesToSize(res.data.result.nicInfo.transmitData,1));
+          this.nicTransmitUsed = this.bytesToSize(res.data.result.nicInfo.transmitData,1);
+          this.nicReceiveUsed = this.bytesToSize(res.data.result.nicInfo.receiveData,1);
+          let nicData = {
+            xData: this.nicGraphXData,
+            yData1: this.nicTransmitYData,
+            yData2: this.nicReceiveYData
+          };
           if(isInit){
             this.dataStatus = true;
             this.cpuGraph =  CanvasService.DepletionGraph(document.getElementById('cpuLine'), cpuData, true, {name: 'cpu使用率', stack: 'cpu'});
             this.ramGraph =  CanvasService.DepletionGraph(document.getElementById('ramLine'), ramData, true, {name: '内存使用率', stack: 'ram'});
+            this.nicGraph =  CanvasService.DepletionTwoLineGraph(document.getElementById('networkLine'), nicData, false, {name1: '发送(KB)', stack1: 'transmit',name2:'接收(KB)',stack2:'receive'});
           }else {
             this.cpuGraph.setOption({
               xAxis: [
@@ -160,6 +199,23 @@ export default {
               ],
               series: [{
                 data: ramData.yData
+              }]
+            });
+
+            this.nicGraph.setOption({
+              xAxis: [
+                {
+                  type: 'category',
+                  data: nicData.xData,
+                  axisTick: {
+                    alignWithLabel: true
+                  }
+                }
+              ],
+              series: [{
+                data: nicData.yData1
+              },{
+                data: nicData.yData2
               }]
             });
           }

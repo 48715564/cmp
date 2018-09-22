@@ -275,6 +275,61 @@ const DepletionGraph = (el, data, isPercentage, series) => {
     el.innerHTML='暂无数据';
   }
 };
+
+const DepletionTwoLineGraph = (el, data, isPercentage, series) => {
+  if (data) {
+    Echarts.dispose(el);
+    const Chart = Echarts.init(el);
+    if (!data) {
+      data = {
+        title: '',
+        xData: null,
+        yData1: [],
+        yData2: []
+      };
+    }
+    Chart.setOption({
+      title: {
+        text: data.title,
+        x: 'center'
+      },
+      tooltip: isPercentage ? percentageTooltip : defaultTooltip,
+      grid: {
+        top: '30px',
+        left: '30px',
+        right: '18px',
+        bottom: '10px',
+        containLabel: true,
+      },
+      xAxis: [
+        {
+          type: 'category',
+          data: data.xData,
+          axisTick: {
+            alignWithLabel: true
+          }
+        }
+      ],
+      yAxis: isPercentage ? percentageYAxis : defaultYAxis,
+      series: [
+        {
+          name: series.name1,
+          type: 'line',
+          stack: series.stack1,
+          data: data.yData1,
+        },{
+          name: series.name2,
+          type: 'line',
+          stack: series.stack2,
+          data: data.yData2,
+        },
+      ],
+    });
+    return Chart;
+  }else{
+    el.innerHTML='暂无数据';
+  }
+};
 export default {
-  DepletionGraph,drawServerGraph,drawStorage
+  DepletionTwoLineGraph,DepletionGraph,drawServerGraph,drawStorage
 };
