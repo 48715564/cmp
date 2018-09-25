@@ -158,7 +158,7 @@ const drawStorage = (el, availableCount, usedCount) => {
   Chart.setOption({
     title: {
       text: `共 ${total.toFixed(2)} GB`,
-      right: '4px',
+      right: '10px',
       top: '30%',
       textStyle: {
         color: $greyDark,
