@@ -28,69 +28,59 @@ const defaultXData = ['', '', '', '', '', '', '', '', '', ''];
 /* eslint-enable */
 const defaultTooltip = {
   trigger: 'axis',
-  axisPointer: {
-    type: 'cross',
-    label: {
-      backgroundColor: $greyDark,
-    },
-  },
 };
 const percentageTooltip = {
   trigger: 'axis',
-  formatter: function (params, ticket, callback) {
+  formatter(params, ticket, callback) {
     if (params[0].value) {
-      let val = params[0].seriesName + ":" + (params[0].value) + "%<br/>" + params[0].name;
+      const val = `${params[0].seriesName}: ${params[0].value}%<br/>${params[0].name}`;
       return val;
-    } else {
-      return params[0].seriesName + ":-";
     }
+    return `${params[0].seriesName}: -`;
   },
   axisPointer: {
-    type: 'cross',
-    label: {
-      backgroundColor: $greyDark,
-    },
   },
 };
 
 const defaultYAxis = [
   {
     type: 'value',
-    minInterval: '1'
+    minInterval: '1',
   },
 ];
 
 const percentageYAxis = [
   {
     axisLabel: {
-      formatter: function (val) {
-        return val + '%';
-      }
+      formatter(val) {
+        return ` ${val}%`;
+      },
     },
     axisPointer: {
       label: {
-        formatter: function (params) {
-          return ((params.value)).toFixed(1) + '%';
-        }
-      }
+        formatter(params) {
+          return ` ${((params.value)).toFixed(1)}%`;
+        },
+      },
     },
     splitNumber: 3,
     splitLine: {
-      show: false
-    }
+      show: false,
+    },
+    max: 100,
   },
 ];
 
-const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
+const drawServerGraph = (el, normalHostCount, unNormalHostCount) => {
   const scale = 1;
-  const total = normalHostCount + unNormalHostCount;
+  const total = parseInt(normalHostCount, 10) + parseInt(unNormalHostCount, 10);
 
   const Chart = Echarts.init(el);
   Chart.setOption({
     title: {
       text: total,
-      left: center,
       top: '35%',
+      left: center,
       textStyle: {
         color: $blackDark,
         fontSize: 16 * scale,
@@ -104,7 +94,7 @@ const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
     },
     tooltip: {
       trigger: 'item',
-      formatter: '{a} <br/>{b}: {d}%',
+      formatter: '{a}<br/>{b}: {d}%',
     },
     legend: {
       selectedMode: false,
@@ -112,7 +102,7 @@ const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
     series: [{
       name: '主机',
       type: 'pie',
-      radius: ['50%', '90%'],
+      radius: ['55%', '85%'],
       // hover时 动画效果
       hoverAnimation: true,
       hoverOffset: 3,
@@ -125,7 +115,7 @@ const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
       data: [
         {
           value: normalHostCount,
-          name: '在线主机',
+          name: '正常主机',
           itemStyle: {
             normal: {
               color: $blue,
@@ -140,7 +130,7 @@ const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
         },
         {
           value: unNormalHostCount,
-          name: '离线主机',
+          name: '异常主机',
           itemStyle: {
             normal: {
               color: $red,
@@ -159,22 +149,31 @@ const drawServerGraph = (el,normalHostCount,unNormalHostCount) => {
   });
 };
 
-
-const drawStorage = (el,availableCount,usedCount) => {
+// 存储
+const drawStorage = (el, availableCount, usedCount) => {
   const scale = 1;
   const total = availableCount + usedCount;
 
   const Chart = Echarts.init(el);
   Chart.setOption({
+    title: {
+      text: `共 ${total.toFixed(2)} GB`,
+      right: '4px',
+      top: '30%',
+      textStyle: {
+        color: $greyDark,
+        fontSize: 12 * scale,
+      },
+    },
     tooltip: {
       trigger: 'item',
-      formatter: '{a}:<br/> {c} TB',
+      formatter: '{a}: {c} TB',
     },
     grid: {
-      top: '28%',
+      top: '45%',
       left: '-15px',
-      right: '0',
-      bottom: '28%',
+      right: '-15px',
+      bottom: '15%',
       containLabel: true,
     },
     xAxis: {
@@ -204,7 +203,7 @@ const drawStorage = (el,availableCount,usedCount) => {
         },
       },
       data: [availableCount],
-    },{
+    }, {
       name: '已用',
       type: 'bar',
       stack: 'total',
@@ -227,6 +226,7 @@ const drawStorage = (el,availableCount,usedCount) => {
   });
 };
 
+// 折线图
 const DepletionGraph = (el, data, isPercentage, series) => {
   if (data) {
     Echarts.dispose(el);
@@ -235,18 +235,18 @@ const DepletionGraph = (el, data, isPercentage, series) => {
       data = {
         title: '',
         xData: null,
-        yData: []
+        yData: [],
       };
     }
     Chart.setOption({
       title: {
         text: data.title,
-        x: 'center'
+        x: 'center',
       },
       tooltip: isPercentage ? percentageTooltip : defaultTooltip,
       grid: {
         top: '30px',
-        left: '30px',
+        left: '8px',
         right: '18px',
         bottom: '10px',
         containLabel: true,
@@ -256,9 +256,9 @@ const DepletionGraph = (el, data, isPercentage, series) => {
           type: 'category',
           data: data.xData,
           axisTick: {
-            alignWithLabel: true
-          }
-        }
+            alignWithLabel: true,
+          },
+        },
       ],
       yAxis: isPercentage ? percentageYAxis : defaultYAxis,
       series: [
@@ -267,15 +267,20 @@ const DepletionGraph = (el, data, isPercentage, series) => {
           type: 'line',
           stack: series.stack,
           data: data.yData,
+          itemStyle: {
+            normal: {
+              color: $red,
+            },
+          },
         },
       ],
     });
     return Chart;
-  }else{
-    el.innerHTML='暂无数据';
   }
+  el.innerHTML = '暂无数据';
 };
 
+// 双折线图
 const DepletionTwoLineGraph = (el, data, isPercentage, series) => {
   if (data) {
     Echarts.dispose(el);
@@ -285,13 +290,13 @@ const DepletionTwoLineGraph = (el, data, isPercentage, series) => {
         title: '',
         xData: null,
         yData1: [],
-        yData2: []
+        yData2: [],
       };
     }
     Chart.setOption({
       title: {
         text: data.title,
-        x: 'center'
+        x: 'center',
       },
       tooltip: isPercentage ? percentageTooltip : defaultTooltip,
       grid: {
@@ -306,9 +311,9 @@ const DepletionTwoLineGraph = (el, data, isPercentage, series) => {
           type: 'category',
           data: data.xData,
           axisTick: {
-            alignWithLabel: true
-          }
-        }
+            alignWithLabel: true,
+          },
+        },
       ],
       yAxis: isPercentage ? percentageYAxis : defaultYAxis,
       series: [
@@ -317,19 +322,28 @@ const DepletionTwoLineGraph = (el, data, isPercentage, series) => {
           type: 'line',
           stack: series.stack1,
           data: data.yData1,
-        },{
+          itemStyle: {
+            normal: {
+              color: $red,
+            },
+          },
+        }, {
           name: series.name2,
           type: 'line',
           stack: series.stack2,
           data: data.yData2,
+          itemStyle: {
+            normal: {
+              color: $blue,
+            },
+          },
         },
       ],
     });
     return Chart;
-  }else{
-    el.innerHTML='暂无数据';
   }
+  el.innerHTML = '暂无数据';
 };
 export default {
-  DepletionTwoLineGraph,DepletionGraph,drawServerGraph,drawStorage
+  DepletionTwoLineGraph, DepletionGraph, drawServerGraph, drawStorage,
 };

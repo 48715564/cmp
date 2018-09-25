@@ -29,17 +29,21 @@
             <div class="item-info">
               <div class="item-info-title wd-full"><span>使用情况</span></div>
               <div class="item-info-k">
-                <div class="item-info-icon item-info-k-icon"></div>
                 <div class="item-info-text">
                   <span class="item-info-text-tag rect-blue-1"></span>
-                  <span>{{indexInfoIsLoad?'加载中...':`${hostInfo.normalHostCount}台正常主机`}} </span>
+                  <span class="nml">正常主机</span>
+                </div>
+                <div class="item-info-text">
+                  <span>{{indexInfoIsLoad?'...':`${hostInfo.normalHostCount} 台`}}</span>
                 </div>
               </div>
               <div class="item-info-o">
-                <div class="item-info-icon item-info-o-icon"></div>
                 <div class="item-info-text">
                   <span class="item-info-text-tag rect-red-1"></span>
-                  <span>{{indexInfoIsLoad?'加载中...':`${hostInfo.unNormalHostCount}台异常主机`}} </span>
+                  <span class="nml">异常主机</span>
+                </div>
+                <div class="item-info-text">
+                  <span>{{indexInfoIsLoad?'...':`${hostInfo.unNormalHostCount} 台`}}</span>
                 </div>
               </div>
             </div>
@@ -55,17 +59,21 @@
             <div class="item-info">
               <div class="item-info-title wd-full"><span>使用情况</span></div>
               <div class="item-info-k">
-                <div class="item-info-icon item-info-k-icon"></div>
                 <div class="item-info-text">
                   <span class="item-info-text-tag rect-blue-1"></span>
-                  <span>{{indexInfoIsLoad?'加载中...':`${bytesToSize(storageInfo.availableCount,4)}TB可用`}} </span>
+                  <span class="nml">可用空间</span>
+                </div>
+                <div class="item-info-text">
+                  <span>{{indexInfoIsLoad?'...':`${bytesToSize(storageInfo.availableCount,4)} TB`}} </span>
                 </div>
               </div>
               <div class="item-info-o">
-                <div class="item-info-icon item-info-o-icon"></div>
                 <div class="item-info-text">
                   <span class="item-info-text-tag rect-red-1"></span>
-                  <span>{{indexInfoIsLoad?'加载中...':`${bytesToSize(storageInfo.usedCount,4)}TB已用`}} </span>
+                  <span class="nml">已用空间</span>
+                </div>
+                <div class="item-info-text">
+                  <span>{{indexInfoIsLoad?'...':`${bytesToSize(storageInfo.usedCount,4)} TB`}} </span>
                 </div>
               </div>
             </div>
@@ -79,10 +87,21 @@
           <div class="item-content">
             <div class="item-info">
               <div class="kubernetes-warn">
-                <div class="item-info-icon item-info-o-icon"></div>
-                <p class="warning" style="color:#000000">{{indexInfoIsLoad?'加载中...':`${networkInfo.count}个网络`}}</p>
-                <div class="warn-message">
-                  <p style="font-size: 12px;" :title='networkStr(network)' v-for="network in this.networkInfo.networks">{{ellipsis(networkStr(network),32)}}</p>
+                <p>
+                  <span class="warning" style="color:#22c36a">{{indexInfoIsLoad?'...':`${networkInfo.count}`}}</span>
+                  <span class="small-text">个网络</span>
+                </p>
+                <div class="warn-message lt">
+                  <span class="small-text">网络信息：</span>
+                  <at-popover
+                    trigger="click"
+                    :content="networkStr(network)"
+                    :key="network.id"
+                    v-for="network in networkInfo.networks">
+                    <p class="msg-item"
+                      :title='networkStr(network)'
+                      >{{networkStr(network)}}</p>
+                    </at-popover>
                 </div>
               </div>
             </div>
@@ -92,14 +111,27 @@
       <!--系统告警-->
       <div class="card col-md-6">
         <div class="item warn">
-          <p class="item-title">告警状态</p>
+          <p class="item-title">告警</p>
           <div class="item-content">
             <div class="item-info">
               <div class="kubernetes-warn">
-                <div class="item-info-icon item-info-o-icon"></div>
-                <p class="warning">{{indexInfoIsLoad?'加载中...':`${alertEvents.length}个告警`}}</p>
+                <p>
+                  <span class="warning">{{indexInfoIsLoad?'...':`${alertEvents.length}`}}</span>
+                  <span class="small-text">个告警</span>
+                </p>
+                <div class="lt">
+                  <span class="small-text">告警信息：</span>
+                </div>
                 <div class="warn-message">
-                  <p style="font-size: 12px;" :title='alertEvent.description' v-for="alertEvent in this.alertEvents">{{ellipsis(alertEvent.description,50)}}</p>
+                  <at-popover
+                    trigger="click"
+                    :content="alertEvent.description"
+                    :key="alertEvent.id"
+                    v-for="alertEvent in alertEvents">
+                    <p class="msg-item warns"
+                      style="font-size: 12px;"
+                      :title='alertEvent.description'>{{alertEvent.description}}</p>
+                  </at-popover>
                 </div>
               </div>
             </div>
@@ -118,9 +150,11 @@
             <div class="item-info mt">
               <div class="item-info-title wd-full"><span>使用情况</span></div>
               <div class="item-info-k">
-                <div class="item-info-icon item-info-k-icon"></div>
                 <div class="item-info-text">
                   <span class="item-info-text-tag rect-red-1"></span>
+                  <span>CPU 使用率</span>
+                </div>
+                <div class="item-info-text">
                   <span>{{cpuUsed}} %</span>
                 </div>
               </div>
@@ -137,9 +171,11 @@
             <div class="item-info mt">
               <div class="item-info-title wd-full"><span>使用情况</span></div>
               <div class="item-info-k">
-                <div class="item-info-icon item-info-k-icon"></div>
                 <div class="item-info-text">
                   <span class="item-info-text-tag rect-red-1"></span>
+                  <span>内存使用率</span>
+                </div>
+                <div class="item-info-text">
                   <span>{{ramUsed}} %</span>
                 </div>
               </div>
@@ -157,7 +193,10 @@
               <div class="item-info-title wd-full"><span>使用情况</span></div>
               <div class="item-info-k">
                 <div class="item-info-text">
-                  <span class="item-info-text-tag rect-blue-2"></span>
+                  <span class="item-info-text-tag rect-red-blue"></span>
+                  <span>网络速率</span>
+                </div>
+                <div class="item-info-text">
                   <div class="line-2">
                     <span>发送 <strong>{{nicTransmitUsed}}KB</strong></span>
                     <span>接收 <strong>{{nicReceiveUsed}}KB</strong></span>
@@ -177,22 +216,14 @@
             <div class="item-info mt">
               <div class="item-info-title wd-full"><span>使用情况</span></div>
               <div class="item-info-k">
-                <div class="item-info-icon item-info-k-icon"></div>
+                  <div class="item-info-text">
+                      <span class="item-info-text-tag rect-red-blue"></span>
+                      <span>存储速率</span>
+                    </div>
                 <div class="item-info-text">
-                  <span class="item-info-text-tag rect-blue-2"></span>
                   <div class="line-2">
                     <span>读取 <strong>207.8</strong></span>
                     <span>写入 <strong>67.7</strong></span>
-                  </div>
-                </div>
-              </div>
-              <div class="item-info-o">
-                <div class="item-info-icon item-info-o-icon"></div>
-                <div class="item-info-text">
-                  <span class="item-info-text-tag rect-red-2"></span>
-                  <div class="line-2">
-                    <span>读取 <strong>25.2</strong></span>
-                    <span>写入 <strong>33.2</strong></span>
                   </div>
                 </div>
               </div>
@@ -203,17 +234,33 @@
     </div>
   </section>
   <!--导航 left-->
-  <div class="slider-nav-left" title="Openstack" @click="">
+  <div class="slider-nav-left" title="Openstack" @click="isLeft = true">
   </div>
   <!--导航 right-->
-  <div class="slider-nav-right" title="Kubernetes" @click="">
+  <div class="slider-nav-right" title="Kubernetes" @click="isRight = true">
   </div>
   <!--导航 bottom-->
-  <div class="slider-nav-bottom" title="XClarity" @click="isXClarity = true">
-  </div>
+  <!-- <div class="slider-nav-bottom" title="XClarity" @click="isXClarity = true">
+  </div> -->
   <transition name="mask">
-    <div class="mask" v-if="isXClarity"></div>
+    <div class="mask" v-if="isXClarity || isLeft || isRight"></div>
   </transition>
+  <!-- 左侧右拉 -->
+  <transition name="lefts">
+    <div class="left" v-if="isLeft">
+      <myframe></myframe>
+      <div class="close" @click="isLeft = false"><i class="icon icon-x"></i></div>
+    </div>
+  </transition>
+  <!-- 右侧左拉 -->
+  <transition name="right">
+      <div class="right" v-if="isRight">
+        <!-- @params src：请求地址 -->
+        <myframe src="http://www.baidu.com/"></myframe>
+        <div class="close" @click="isRight = false"><i class="icon icon-x"></i></div>
+      </div>
+    </transition>
+  <!-- 底部上拉 -->
   <transition name="xclarity">
     <div class="XClarity" v-if="isXClarity">
       <xclarity></xclarity>
