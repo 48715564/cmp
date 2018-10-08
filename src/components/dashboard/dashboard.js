@@ -35,6 +35,11 @@ export default {
       nicGraphXData: [],
       nicTransmitYData: [],
       nicTransmitUsed: 0,
+      storeIOPSReadYData: [],
+      storeIOPSRead: 0,
+      storeIOPSXData: [],
+      storeIOPSWriteYData: [],
+      storeIOPSWrite: 0,
     };
   },
   methods: {
@@ -142,6 +147,47 @@ export default {
         document.getElementById('ramLine').innerHTML = loadMsg;
       }
       this.loadMonitorData();
+      this.loadDataStoreData()
+    },
+    loadDataStoreData(isInit = true){
+      OvirtService.ovirtMonitorStoreIOPSData().then((res) => {
+        if (res.data.success) {
+          // 存储IOPS信息
+          this.storeIOPSXData=res.data.result.timeData;
+          this.storeIOPSReadYData=this.bytesToSize(res.data.result.readData,2);
+          this.storeIOPSWriteYData=this.bytesToSize(res.data.result.writeDate,2);
+          const dataStoreIOPSData = {
+            xData: this.storeIOPSXData,
+            yData1: this.storeIOPSReadYData,
+            yData2: this.storeIOPSWriteYData,
+          };
+          if (isInit) {
+            this.dataStoreIOPSGraph = CanvasService.DepletionTwoLineGraph(document.getElementById('storeLine'), dataStoreIOPSData, false, {
+              name1: '读取(MB)',
+              stack1: 'transmit',
+              name2: '写入(MB)',
+              stack2: 'receive'
+            });
+          }else{
+            this.dataStoreIOPSGraph.setOption({
+              xAxis: [
+                {
+                  type: 'category',
+                  data: dataStoreIOPSData.xData,
+                  axisTick: {
+                    alignWithLabel: true,
+                  },
+                },
+              ],
+              series: [{
+                data: dataStoreIOPSData.yData1,
+              }, {
+                data: dataStoreIOPSData.yData2,
+              }],
+            });
+          }
+        }
+      });
     },
     loadMonitorData(isInit = true) {
       OvirtService.ovirtMonitorData().then((res) => {
@@ -149,12 +195,12 @@ export default {
           // cpu信息
           this.pushCpuGraphXData();
           this.pushCpuGraphYData(res.data.result.cpuUsed);
-          const cpuData = { xData: this.cpuGraphXData, yData: this.cpuGraphYData };
+          const cpuData = {xData: this.cpuGraphXData, yData: this.cpuGraphYData};
           this.cpuUsed = res.data.result.cpuUsed;
           // 内存信息
           this.pushRamGraphXData();
           this.pushRamGraphYData(res.data.result.menoryUsed);
-          const ramData = { xData: this.ramGraphXData, yData: this.ramGraphYData };
+          const ramData = {xData: this.ramGraphXData, yData: this.ramGraphYData};
           this.ramUsed = res.data.result.menoryUsed;
           // 网络IO信息
           this.pushNicGraphXData();
@@ -169,9 +215,20 @@ export default {
           };
           if (isInit) {
             this.dataStatus = true;
-            this.cpuGraph = CanvasService.DepletionGraph(document.getElementById('cpuLine'), cpuData, true, { name: 'CPU 使用率', stack: 'cpu' });
-            this.ramGraph = CanvasService.DepletionGraph(document.getElementById('ramLine'), ramData, true, { name: '内存使用率', stack: 'ram' });
-            this.nicGraph = CanvasService.DepletionTwoLineGraph(document.getElementById('networkLine'), nicData, false, { name1: '发送(KB)', stack1: 'transmit', name2: '接收(KB)', stack2: 'receive' });
+            this.cpuGraph = CanvasService.DepletionGraph(document.getElementById('cpuLine'), cpuData, true, {
+              name: 'CPU 使用率',
+              stack: 'cpu'
+            });
+            this.ramGraph = CanvasService.DepletionGraph(document.getElementById('ramLine'), ramData, true, {
+              name: '内存使用率',
+              stack: 'ram'
+            });
+            this.nicGraph = CanvasService.DepletionTwoLineGraph(document.getElementById('networkLine'), nicData, false, {
+              name1: '发送(KB)',
+              stack1: 'transmit',
+              name2: '接收(KB)',
+              stack2: 'receive'
+            });
           } else {
             this.cpuGraph.setOption({
               xAxis: [
@@ -227,23 +284,29 @@ export default {
     },
   },
   mounted() {
-    OvirtService.ovirtIndexInfo().then((res) => {
-      if (res.data.success) {
-        this.hostInfo = res.data.result.hostInfo;
-        this.indexInfoIsLoad = false;
-        CanvasService.drawServerGraph(this.$refs.server, res.data.result.hostInfo.normalHostCount, res.data.result.hostInfo.unNormalHostCount);
-        this.storageInfo = res.data.result.storageInfo;
-        CanvasService.drawStorage(this.$refs.store, this.bytesToSize(res.data.result.storageInfo.availableCount, 4), this.bytesToSize(res.data.result.storageInfo.usedCount, 4));
-        this.networkInfo = res.data.result.networkInfo;
-        this.alertEvents = res.data.result.alertEvents;
-      }
-    },
-    );
     this.initLoadCpuMonitorData();
+    OvirtService.ovirtIndexInfo().then((res) => {
+        if (res.data.success) {
+          this.hostInfo = res.data.result.hostInfo;
+          this.indexInfoIsLoad = false;
+          CanvasService.drawServerGraph(this.$refs.server, res.data.result.hostInfo.normalHostCount, res.data.result.hostInfo.unNormalHostCount);
+          this.storageInfo = res.data.result.storageInfo;
+          CanvasService.drawStorage(this.$refs.store, this.bytesToSize(res.data.result.storageInfo.availableCount, 4), this.bytesToSize(res.data.result.storageInfo.usedCount, 4));
+          this.networkInfo = res.data.result.networkInfo;
+          this.alertEvents = res.data.result.alertEvents;
+        }
+      },
+    );
+
     setInterval(() => {
       this.loadMonitorData(false);
     }, 1000);
+
+    setInterval(() => {
+      this.loadDataStoreData(false);
+    }, 10000);
+
   },
   computed: {},
-  components: { Xclarity, Myframe },
+  components: {Xclarity, Myframe},
 };
