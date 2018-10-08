@@ -154,8 +154,22 @@ export default {
         if (res.data.success) {
           // 存储IOPS信息
           this.storeIOPSXData=res.data.result.timeData;
-          this.storeIOPSReadYData=this.bytesToSize(res.data.result.readData,2);
-          this.storeIOPSWriteYData=this.bytesToSize(res.data.result.writeDate,2);
+          let readYData = [];
+          _.each(res.data.result.readData,item=>{
+            readYData.push(this.bytesToSize(item,2))
+          });
+          let writeYData = [];
+          _.each(res.data.result.writeDate,item=>{
+            writeYData.push(this.bytesToSize(item,2))
+          });
+          this.storeIOPSReadYData=readYData;
+          this.storeIOPSWriteYData=writeYData;
+          if(readYData.length>0){
+            this.storeIOPSRead = readYData[readYData.length-1];
+          }
+          if(writeYData.length>0){
+            this.storeIOPSWrite = writeYData[writeYData.length-1];
+          }
           const dataStoreIOPSData = {
             xData: this.storeIOPSXData,
             yData1: this.storeIOPSReadYData,
