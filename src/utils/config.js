@@ -20,6 +20,7 @@ module.exports = {
     ovirtIndexInfoData: `${API}/ovirt/indexInfo`,
     ovirtMonitorData: `${API}/ovirt/monitorData`,
     ovirtMonitorStoreIOPSData: `${API}/ovirt/monitorStoreIOPSData`,
+    ovirtMonitorNowStoreIOPSData : `${API}/ovirt/monitorNowStoreIOPSData`,
 
   },
   BASE_URL: API,

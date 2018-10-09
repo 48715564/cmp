@@ -210,7 +210,7 @@
       <!--存储使用率-->
       <div class="card col-md-12">
         <div class="item">
-          <p class="item-title">存储 IOPS</p>
+          <p class="item-title">存储</p>
           <div class="item-content standards">
             <div class="item-canvas" id="storeLine"></div>
             <div class="item-info mt">
@@ -218,12 +218,12 @@
               <div class="item-info-k">
                   <div class="item-info-text">
                       <span class="item-info-text-tag rect-red-blue"></span>
-                      <span>存储速率</span>
+                      <span>存储带宽</span>
                     </div>
                 <div class="item-info-text">
                   <div class="line-2">
-                    <span>读取 <strong>{{storeIOPSRead}}MB</strong></span>
-                    <span>写入 <strong>{{storeIOPSWrite}}MB</strong></span>
+                    <span>读取 <strong>{{storeIOPSRead}}B</strong></span>
+                    <span>写入 <strong>{{storeIOPSWrite}}B</strong></span>
                   </div>
                 </div>
               </div>
@@ -248,7 +248,7 @@
   <!-- 左侧右拉 -->
   <transition name="lefts">
     <div class="left" v-if="isLeft">
-      <myframe></myframe>
+      <myframe src="http://www.163.com/"></myframe>
       <div class="close" @click="isLeft = false"><i class="icon icon-x"></i></div>
     </div>
   </transition>
@@ -256,7 +256,7 @@
   <transition name="right">
       <div class="right" v-if="isRight">
         <!-- @params src：请求地址 -->
-        <myframe src="http://www.baidu.com/"></myframe>
+        <myframe src="http://10.0.2.49"></myframe>
         <div class="close" @click="isRight = false"><i class="icon icon-x"></i></div>
       </div>
     </transition>

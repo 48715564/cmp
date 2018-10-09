@@ -156,11 +156,17 @@ export default {
           this.storeIOPSXData=res.data.result.timeData;
           let readYData = [];
           _.each(res.data.result.readData,item=>{
-            readYData.push(this.bytesToSize(item,2))
+            if(item<0){
+              item = 0;
+            }
+            readYData.push(this.round(item))
           });
           let writeYData = [];
           _.each(res.data.result.writeDate,item=>{
-            writeYData.push(this.bytesToSize(item,2))
+            if(item<0){
+              item = 0;
+            }
+            writeYData.push(this.round(item))
           });
           this.storeIOPSReadYData=readYData;
           this.storeIOPSWriteYData=writeYData;
@@ -177,9 +183,9 @@ export default {
           };
           if (isInit) {
             this.dataStoreIOPSGraph = CanvasService.DepletionTwoLineGraph(document.getElementById('storeLine'), dataStoreIOPSData, false, {
-              name1: '读取(MB)',
+              name1: '读取(B)',
               stack1: 'transmit',
-              name2: '写入(MB)',
+              name2: '写入(B)',
               stack2: 'receive'
             });
           }else{
