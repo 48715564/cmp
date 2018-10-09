@@ -19,7 +19,7 @@ module.exports = {
     xClarity_sysResources: `${API}/XClarity/sysResources`,
     ovirtIndexInfoData: `${API}/ovirt/indexInfo`,
     ovirtMonitorData: `${API}/ovirt/monitorData`,
-    ovirtMonitorStoreIOPSData: `${API}/ovirt/monitorStoreIOPSData`,
+    ovirtMonitorStoreBandWidthData: `${API}/ovirt/monitorStoreBandWidthData`,
     ovirtMonitorNowStoreIOPSData : `${API}/ovirt/monitorNowStoreIOPSData`,
 
   },

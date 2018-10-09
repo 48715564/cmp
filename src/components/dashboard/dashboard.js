@@ -150,7 +150,7 @@ export default {
       this.loadDataStoreData()
     },
     loadDataStoreData(isInit = true){
-      OvirtService.ovirtMonitorStoreIOPSData().then((res) => {
+      OvirtService.ovirtMonitorStoreBandWidthData().then((res) => {
         if (res.data.success) {
           // 存储IOPS信息
           this.storeIOPSXData=res.data.result.timeData;
