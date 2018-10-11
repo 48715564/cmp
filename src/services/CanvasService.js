@@ -157,7 +157,7 @@ const drawStorage = (el, availableCount, usedCount) => {
   const Chart = Echarts.init(el);
   Chart.setOption({
     title: {
-      text: `共 ${total.toFixed(2)} GB`,
+      text: `共 ${total.toFixed(2)} TB`,
       right: '10px',
       top: '30%',
       textStyle: {
