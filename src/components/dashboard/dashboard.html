@@ -234,7 +234,7 @@
     </div>
   </section>
   <!--导航 left-->
-  <div class="slider-nav-left" title="Openstack" @click="isLeft = true">
+  <div class="slider-nav-left" title="Openstack" @click="gotoOvirt">
   </div>
   <!--导航 right-->
   <div class="slider-nav-right" title="Kubernetes" @click="isRight = true">
@@ -246,12 +246,12 @@
     <div class="mask" v-if="isXClarity || isLeft || isRight"></div>
   </transition>
   <!-- 左侧右拉 -->
-  <transition name="lefts">
-    <div class="left" v-if="isLeft">
-      <myframe src="https://10.0.4.90/ovirt-engine/webadmin/?locale=zh_CN#dashboard-main"></myframe>
-      <div class="close" @click="isLeft = false"><i class="icon icon-x"></i></div>
-    </div>
-  </transition>
+  <!--<transition name="lefts">-->
+    <!--<div class="left" v-if="isLeft">-->
+      <!--<myframe src="https://10.0.4.90/ovirt-engine/webadmin/?locale=zh_CN#dashboard-main"></myframe>-->
+      <!--<div class="close" @click="isLeft = false"><i class="icon icon-x"></i></div>-->
+    <!--</div>-->
+  <!--</transition>-->
   <!-- 右侧左拉 -->
   <transition name="right">
       <div class="right" v-if="isRight">

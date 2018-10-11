@@ -63,8 +63,8 @@ export default {
       return this.round((bytes / Math.pow(k, i)), 2);
       // toPrecision(3) 后面保留一位小数，如1.0GB                                                                                                                  //return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
     },
-    gotoVMWare() {
-      window.open('https://172.16.90.253/ui');
+    gotoOvirt() {
+      window.open('https://10.0.4.90/ovirt-engine/webadmin/?locale=zh_CN#dashboard-main');
     },
 
     ellipsis(value, size = 32) {
