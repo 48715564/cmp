@@ -1,6 +1,7 @@
 import CanvasService from '@/services/CanvasService.js';
 import VMWareService from '@/services/VMWareService.js';
 import Xclarity from '@/components/xclarity/xclarity.vue';
+import Myframe from '@/components/frame/myframe.vue';
 import _ from 'lodash';
 import Vue from 'vue';
 
@@ -45,6 +46,8 @@ export default {
   name: 'dashboard',
   data() {
     return {
+      isLeft: false,
+      isRight: false,
       mainType: 0,
       tableHeight: 350,
       graphNames: {
@@ -598,5 +601,5 @@ export default {
       }
     },
   },
-  components: {Xclarity},
+  components: {Xclarity,Myframe},
 };

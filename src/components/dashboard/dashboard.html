@@ -347,10 +347,18 @@
   <div class="slider-nav-left" title="VMWare" @click="gotoVMWare">
   </div>
   <!--导航 right-->
-  <div class="slider-nav-right" title="XClarity" @click="isXClarity = true">
+  <div class="slider-nav-right" title="Kubernetes" @click="isRight = true">
   </div>
   <transition name="mask">
-    <div class="mask" v-if="isXClarity"></div>
+    <div class="mask" v-if="isXClarity || isLeft || isRight"></div>
+  </transition>
+  <!-- 右侧左拉 -->
+  <transition name="right">
+    <div class="right" v-if="isRight">
+      <!-- @params src：请求地址 -->
+      <myframe src="http://10.0.2.49"></myframe>
+      <div class="close" @click="isRight = false"><i class="icon icon-x"></i></div>
+    </div>
   </transition>
   <transition name="xclarity">
     <div class="XClarity" v-if="isXClarity">
