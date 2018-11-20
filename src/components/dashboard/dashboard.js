@@ -11,6 +11,107 @@ export default {
   name: 'dashboard',
   data() {
     return {
+      isLeft: false,
+      isRight: false,
+      mainType: 0,
+      tableHeight: 350,
+      graphNames: {
+        name1: '',
+        name2: '',
+        name3: '',
+        name4: '',
+      },
+      graphDatas: [],
+      cpuAndMenInfo: {
+        freeMemorySize: 0,
+        freeCpuMhz: 0,
+        usedCpuMhz: 0,
+        usedMemorySize: 0,
+        cpuMhz: 0,
+        memorySize: 0,
+      },
+      storeInfo: {
+        freeStore: 0,
+        usedStore: 0,
+        store: 0,
+      },
+      DepletionGraph1: null,
+      DepletionGraph2: null,
+      DepletionGraph3: null,
+      DepletionGraph4: null,
+      columns1: [
+        nameColumn,
+        overallStatusColumn,
+        connectionStateColumn, {
+          title: '操作',
+          render: (h, params) => this.tableRender(h, params, '3'),
+        },
+      ],
+      data1: [],
+      columns2: [
+        nameColumn,
+        overallStatusColumn, {
+          title: '操作',
+          render: (h, params) => this.tableRender(h, params, '1'),
+        },
+      ],
+      data2: [],
+      columns3: [
+        nameColumn,
+        overallStatusColumn, {
+          title: '操作',
+          render: (h, params) => this.tableRender(h, params, '2'),
+        },
+      ],
+      data3: [],
+      columns4: [
+        nameColumn,
+        overallStatusColumn, powerStateColumn, {
+          title: '操作',
+          render: (h, params) => this.tableRender(h, params, '4', params.item['runtime.powerState'] == 'poweredOff'),
+        },
+      ],
+      data4: [],
+      columns5: [
+        nameColumn,
+        overallStatusColumn,
+        {
+          title: '是否可以访问',
+          key: 'summary.accessible',
+        }, {
+          title: '操作',
+          render: (h, params) => this.tableRender(h, params, '5'),
+        },
+      ],
+      data5: [],
+      columns6: [
+        nameColumn,
+        overallStatusColumn, {
+          title: '操作',
+          render: (h, params) => this.tableRender(h, params, '6'),
+        },
+      ],
+      data6: [],
+      dataNetWorkHost: [],
+      columnsNetWorkHost: [
+        nameColumn,
+        overallStatusColumn,
+        connectionStateColumn,
+      ],
+      dataNetWorkVM: [],
+      columnsNetWorkVM: [
+        nameColumn,
+        overallStatusColumn,
+        powerStateColumn,
+      ],
+      data: {
+        dataCenterList: loadMsg,
+        hostList: loadMsg,
+        clusterList: loadMsg,
+        vmList: loadMsg,
+        dsList: loadMsg,
+        networkList: loadMsg,
+      },
       dataStatus: true,
       indexInfoIsLoad: true,
       networkInfo: false,
@@ -147,34 +248,34 @@ export default {
         document.getElementById('ramLine').innerHTML = loadMsg;
       }
       this.loadMonitorData();
-      this.loadDataStoreData()
+      this.loadDataStoreData();
     },
-    loadDataStoreData(isInit = true){
+    loadDataStoreData(isInit = true) {
       OvirtService.ovirtMonitorStoreBandWidthData().then((res) => {
         if (res.data.success) {
           // 存储IOPS信息
-          this.storeIOPSXData=res.data.result.timeData;
-          let readYData = [];
-          _.each(res.data.result.readData,item=>{
-            if(item<0){
+          this.storeIOPSXData = res.data.result.timeData;
+          const readYData = [];
+          _.each(res.data.result.readData, (item) => {
+            if (item < 0) {
               item = 0;
             }
-            readYData.push(this.round(item))
+            readYData.push(this.round(item));
           });
-          let writeYData = [];
-          _.each(res.data.result.writeDate,item=>{
-            if(item<0){
+          const writeYData = [];
+          _.each(res.data.result.writeDate, (item) => {
+            if (item < 0) {
               item = 0;
             }
-            writeYData.push(this.round(item))
+            writeYData.push(this.round(item));
           });
-          this.storeIOPSReadYData=readYData;
-          this.storeIOPSWriteYData=writeYData;
-          if(readYData.length>0){
-            this.storeIOPSRead = readYData[readYData.length-1];
+          this.storeIOPSReadYData = readYData;
+          this.storeIOPSWriteYData = writeYData;
+          if (readYData.length > 0) {
+            this.storeIOPSRead = readYData[readYData.length - 1];
           }
-          if(writeYData.length>0){
-            this.storeIOPSWrite = writeYData[writeYData.length-1];
+          if (writeYData.length > 0) {
+            this.storeIOPSWrite = writeYData[writeYData.length - 1];
           }
           const dataStoreIOPSData = {
             xData: this.storeIOPSXData,
@@ -186,9 +287,9 @@ export default {
               name1: '读取(B)',
               stack1: 'transmit',
               name2: '写入(B)',
-              stack2: 'receive'
+              stack2: 'receive',
             });
-          }else{
+          } else {
             this.dataStoreIOPSGraph.setOption({
               xAxis: [
                 {
@@ -215,12 +316,12 @@ export default {
           // cpu信息
           this.pushCpuGraphXData();
           this.pushCpuGraphYData(res.data.result.cpuUsed);
-          const cpuData = {xData: this.cpuGraphXData, yData: this.cpuGraphYData};
+          const cpuData = { xData: this.cpuGraphXData, yData: this.cpuGraphYData };
           this.cpuUsed = res.data.result.cpuUsed;
           // 内存信息
           this.pushRamGraphXData();
           this.pushRamGraphYData(res.data.result.menoryUsed);
-          const ramData = {xData: this.ramGraphXData, yData: this.ramGraphYData};
+          const ramData = { xData: this.ramGraphXData, yData: this.ramGraphYData };
           this.ramUsed = res.data.result.menoryUsed;
           // 网络IO信息
           this.pushNicGraphXData();
@@ -237,17 +338,17 @@ export default {
             this.dataStatus = true;
             this.cpuGraph = CanvasService.DepletionGraph(document.getElementById('cpuLine'), cpuData, true, {
               name: 'CPU 使用率',
-              stack: 'cpu'
+              stack: 'cpu',
             });
             this.ramGraph = CanvasService.DepletionGraph(document.getElementById('ramLine'), ramData, true, {
               name: '内存使用率',
-              stack: 'ram'
+              stack: 'ram',
             });
             this.nicGraph = CanvasService.DepletionTwoLineGraph(document.getElementById('networkLine'), nicData, false, {
               name1: '发送(KB)',
               stack1: 'transmit',
               name2: '接收(KB)',
-              stack2: 'receive'
+              stack2: 'receive',
             });
           } else {
             this.cpuGraph.setOption({
@@ -306,16 +407,16 @@ export default {
   mounted() {
     this.initLoadCpuMonitorData();
     OvirtService.ovirtIndexInfo().then((res) => {
-        if (res.data.success) {
-          this.hostInfo = res.data.result.hostInfo;
-          this.indexInfoIsLoad = false;
-          CanvasService.drawServerGraph(this.$refs.server, res.data.result.hostInfo.normalHostCount, res.data.result.hostInfo.unNormalHostCount);
-          this.storageInfo = res.data.result.storageInfo;
-          CanvasService.drawStorage(this.$refs.store, this.bytesToSize(res.data.result.storageInfo.availableCount, 4), this.bytesToSize(res.data.result.storageInfo.usedCount, 4));
-          this.networkInfo = res.data.result.networkInfo;
-          this.alertEvents = res.data.result.alertEvents;
-        }
-      },
+      if (res.data.success) {
+        this.hostInfo = res.data.result.hostInfo;
+        this.indexInfoIsLoad = false;
+        CanvasService.drawServerGraph(this.$refs.server, res.data.result.hostInfo.normalHostCount, res.data.result.hostInfo.unNormalHostCount);
+        this.storageInfo = res.data.result.storageInfo;
+        CanvasService.drawStorage(this.$refs.store, this.bytesToSize(res.data.result.storageInfo.availableCount, 4), this.bytesToSize(res.data.result.storageInfo.usedCount, 4));
+        this.networkInfo = res.data.result.networkInfo;
+        this.alertEvents = res.data.result.alertEvents;
+      }
+    },
     );
 
     setInterval(() => {
@@ -325,8 +426,6 @@ export default {
     setInterval(() => {
       this.loadDataStoreData(false);
     }, 10000);
-
   },
-  computed: {},
-  components: {Xclarity, Myframe},
+  components: { Xclarity, Myframe },
 };

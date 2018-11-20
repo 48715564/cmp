@@ -245,6 +245,14 @@
   <transition name="mask">
     <div class="mask" v-if="isXClarity || isLeft || isRight"></div>
   </transition>
+  <!-- 右侧左拉 -->
+  <transition name="right">
+    <div class="right" v-if="isRight">
+      <!-- @params src：请求地址 -->
+      <myframe src="http://10.0.2.49"></myframe>
+      <div class="close" @click="isRight = false"><i class="icon icon-x"></i></div>
+    </div>
+  </transition>
   <!-- 左侧右拉 -->
   <!--<transition name="lefts">-->
     <!--<div class="left" v-if="isLeft">-->
